@@ -21,20 +21,35 @@ class BinaryTreeTest(unittest.TestCase):
     p = bt.Node(28)
     tree = bt.BinaryTree(a)
     a.left = b
+    b.parent = a
     b.left = c
+    c.parent = b
     c.left = d
+    d.parent = c
     c.right = e
+    e.parent = c
     b.right = f
+    f.parent = b
     f.right = g
+    g.parent = f
     g.left = h
+    h.parent = g
     a.right = i
+    i.parent = a
     i.left = j
+    j.parent = i
     j.right = k
+    k.parent = j
     k.left = l
+    l.parent = k
     l.right = m
+    m.parent = l
     k.right = n
+    n.parent = k
     i.right = o
+    o.parent = i
     o.right = p
+    p.parent = o
     return tree
 
   def testPreorder(self):
@@ -47,6 +62,9 @@ class BinaryTreeTest(unittest.TestCase):
     tree = self.ExampleTree()
     self.assertEqual(
       tree.inorder(), 
+      [28, 271, 0, 6, 561, 17, 3, 314, 2, 401, 641, 1, 257, 6, 271, 28])
+    self.assertEqual(
+      tree.inorder_no_space(), 
       [28, 271, 0, 6, 561, 17, 3, 314, 2, 401, 641, 1, 257, 6, 271, 28])
 
   def testPostorder(self):
@@ -82,4 +100,60 @@ class BinaryTreeTest(unittest.TestCase):
     # Without node 'g', no longer true
     f.right = None
     self.assertFalse(tree.is_height_balanced())
+
+  def testIsSymmetric(self):
+    a = bt.Node(1)
+    b = bt.Node(2)
+    c = bt.Node(3)
+    d = bt.Node(4)
+    e = bt.Node(2)
+    f = bt.Node(4)
+    g = bt.Node(3)
+    tree = bt.BinaryTree(a)
+    a.left = b
+    b.left = c
+    b.right = d
+    a.right = e
+    e.left = f
+    e.right = g
+    # Tree is originally symmetric
+    self.assertTrue(tree.is_symmetric())
+    # If value of node 'g' changes, not true
+    g.value = -1
+    self.assertFalse(tree.is_symmetric())
+    # Without node 'g', no longer true
+    e.right = None
+    self.assertFalse(tree.is_symmetric())
+
+  def testLeastCommonAncestor(self):
+    a = bt.Node('a')
+    b = bt.Node('b')
+    c = bt.Node('c')
+    d = bt.Node('d')
+    e = bt.Node('e')
+    f = bt.Node('f')
+    g = bt.Node('g')
+    h = bt.Node('h')
+    i = bt.Node('i')
+    tree = bt.BinaryTree(a)
+    a.left = b
+    b.parent = a
+    b.left = c
+    c.parent = b
+    b.right = d
+    d.parent = b
+    c.left = e
+    e.parent = c
+    a.right = f
+    f.parent = a
+    f.left = g
+    g.parent = f
+    f.right = h
+    h.parent = f
+    h.right = i
+    i.parent = h
+    self.assertEqual(tree.get_ancestry(i), [h, f, a])
+    self.assertEqual(tree.get_ancestry(a), [])
+    self.assertEqual(tree.least_common_ancestor(e, d), b)
+    self.assertEqual(tree.least_common_ancestor(b, i), a)
 

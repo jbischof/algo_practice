@@ -93,3 +93,84 @@ class BinaryTree():
     if not left_bal or not right_bal or abs(left_depth - right_depth) > 1:
       is_bal = False
     return is_bal, max(left_depth, right_depth)
+
+  def is_symmetric(self):
+    """ Checks if left and right subtrees are mirror images """
+    if not self.root:
+      return True
+    return self.is_symmetric_helper(self.root.left, self.root.right)
+
+  def is_symmetric_helper(self, left_node, right_node):
+    """ Compares left and right subtrees for equality recursively """
+    # Case 1: both nodes empty
+    if not left_node and not right_node:
+      return True
+    # Case 2: one node empty but not the other
+    if not left_node or not right_node:
+      return False
+    # Case 3: both have data
+    return (left_node.value == right_node.value and 
+        self.is_symmetric_helper(left_node.left, right_node.right) and
+        self.is_symmetric_helper(left_node.right, right_node.left))
+
+  def get_ancestry(self, node):
+    """ Return list of ancestors of node. Only works if parent field is 
+    populated """
+    # TODO(bischof): just need to return depth to avoid O(N) storage
+    res = []
+    while node.parent:
+      res.append(node.parent)
+      node = node.parent
+    return res
+
+  def least_common_ancestor(self, node1, node2):
+    """ Find the least common ancestor of two nodes. Only works if parent field 
+    is populated. """
+    # Find ancestry of both nodes
+    ancestor1 = self.get_ancestry(node1)
+    ancestor2 = self.get_ancestry(node2)
+    # Want first array to be smaller
+    if len(ancestor1) > len(ancestor2):
+      ancestor1, ancestor2 = ancestor2, ancestor1
+      node1, node2 = node2, node1
+    # If ancestor lists not same lengths, make second list shorter
+    diff = len(ancestor2) - len(ancestor1)
+    while diff:
+      node2 = node2.parent
+      diff -= 1
+    # Now that both same length, traverse in tandem until find match
+    while node1 is not node2:
+      node1 = node1.parent
+      node2 = node2.parent
+    return node1
+
+  def inorder_no_space(self):
+    """ Return inorder traversal using O(1) space """
+    ret = []
+    node = self.root
+    prev = None
+    while node:
+      # Just came from parent, need to explore children
+      if prev is node.parent:
+        prev = node
+        if node.left:
+          node = node.left
+        elif node.right:
+          ret.append(node.value)
+          node = node.right
+        else:
+          ret.append(node.value)
+          node = node.parent
+      # Just visited left child
+      elif prev is node.left:
+        prev = node
+        ret.append(node.value)
+        if node.right:
+          node = node.right
+        else:
+          node = node.parent
+      # Just visited right child
+      else:
+        prev = node
+        node = node.parent
+    return ret
