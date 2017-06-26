@@ -9,6 +9,62 @@ class BinaryTree():
   def __init__(self, root=None):
     self.root = root
 
+  def __eq__(self, other):
+    """ Two binary trees are equal if their preorder and inorder traversals
+    are the same """
+    return (self.inorder() == other.inorder() and 
+        self.preorder() == other.preorder())
+
+  def __neq__(self, other):
+    return not self.__eq__(other)
+
+  @classmethod
+  def from_preorder_inorder(cls, preorder, inorder):
+    """ Construct a tree from its preorder and inorder traversals. 
+    Args:
+      preorder: A list of node values in preorder
+      inorder: A list of node values in inorder
+    Returns:
+      A BinaryTree class
+    """
+    tree = cls()
+    tree.root = BinaryTree.from_preorder_inorder_helper(preorder, inorder)
+    return tree
+
+  @staticmethod
+  def from_preorder_inorder_helper(preorder, inorder):
+    """ Performs recursion for preorder/inorder constructor """
+    # Base case: two levels of tree. This happens with <3 nodes or 3 nodes where
+    # the second level is full.
+    if len(preorder) < 3 or (len(preorder) == 3 and inorder[1] == preorder[0]):
+      return BinaryTree.preorder_inorder_base_case(preorder, inorder)
+    # Otherwise compare root location in preorder and inorder to divide up tree
+    root = Node(preorder[0])
+    # root_loc is location of root in inorder but also size of left tree
+    root_loc = inorder.index(preorder[0]) 
+    # Left tree nodes are in positions 1 to root_loc
+    root.left = BinaryTree.from_preorder_inorder_helper(
+        preorder[1:(1 + root_loc)], inorder[:root_loc])
+    # Right tree nodes are in positions (root_loc + 1) to end
+    root.right = BinaryTree.from_preorder_inorder_helper(
+        preorder[(1 + root_loc):], inorder[(root_loc + 1):])
+    return root
+
+  @staticmethod
+  def preorder_inorder_base_case(preorder, inorder):
+    """ Base case for preorder/inorder reconstruction: 3 or fewer nodes. """
+    if not preorder:
+      return None
+    nomatch = preorder != inorder
+    root = Node(preorder.pop(0))
+    # If traversals don't match, need to extract left node 
+    if nomatch:
+      root.left = Node(preorder.pop(0))
+    # Anything left is right node
+    if preorder:
+      root.right = Node(preorder.pop(0))
+    return root 
+
   def preorder(self):
     """ Returns pre-order traversal of tree """
     ret = []
@@ -155,20 +211,14 @@ class BinaryTree():
         prev = node
         if node.left:
           node = node.left
-        elif node.right:
-          ret.append(node.value)
-          node = node.right
-        else:
-          ret.append(node.value)
-          node = node.parent
-      # Just visited left child
+          continue
+        ret.append(node.value)
+        node = node.right or node.parent
+      # Just visited left child, look right
       elif prev is node.left:
         prev = node
         ret.append(node.value)
-        if node.right:
-          node = node.right
-        else:
-          node = node.parent
+        node = node.right or node.parent
       # Just visited right child
       else:
         prev = node

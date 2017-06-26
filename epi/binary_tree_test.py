@@ -73,6 +73,46 @@ class BinaryTreeTest(unittest.TestCase):
       tree.postorder(), 
       [28, 0, 271, 17, 3, 561, 6, 641, 401, 257, 1, 2, 28, 271, 6, 314])
 
+  def testPreOrderInOrderBaseCase(self):
+    a = bt.Node('a')
+    b = bt.Node('b')
+    c = bt.Node('c')
+    # First case: fully connected
+    a.left = b
+    a.right = c
+    preorder = ['a', 'b', 'c']
+    postorder = ['b', 'a', 'c']
+    ans = bt.BinaryTree.preorder_inorder_base_case(preorder, postorder)
+    self.assertEqual(bt.BinaryTree(a), bt.BinaryTree(ans)) 
+    # Second case: only left
+    a.left = b
+    a.right = None
+    preorder = ['a', 'b']
+    postorder = ['b', 'a']
+    ans = bt.BinaryTree.preorder_inorder_base_case(preorder, postorder)
+    self.assertEqual(bt.BinaryTree(a), bt.BinaryTree(ans)) 
+    # Third case: only right
+    a.left = None
+    a.right = c
+    preorder = ['a', 'c']
+    postorder = ['a', 'c']
+    ans = bt.BinaryTree.preorder_inorder_base_case(preorder, postorder)
+    self.assertEqual(bt.BinaryTree(a), bt.BinaryTree(ans)) 
+    # Fourth case: no children
+    a.left = None
+    a.right = None
+    preorder = ['a']
+    postorder = ['a']
+    ans = bt.BinaryTree.preorder_inorder_base_case(preorder, postorder)
+    self.assertEqual(bt.BinaryTree(a), bt.BinaryTree(ans)) 
+
+  def testPreOrderInOrder(self):
+    tree = self.ExampleTree()
+    inorder = [28, 271, 0, 6, 561, 17, 3, 314, 2, 401, 641, 1, 257, 6, 271, 28]
+    preorder = [314, 6, 271, 28, 0, 561, 3, 17, 6, 2, 1, 401, 641, 257, 271, 28]
+    ans = bt.BinaryTree.from_preorder_inorder(preorder, inorder)
+    self.assertEqual(tree, ans) 
+
   def testLevelPrint(self):
     tree = self.ExampleTree()
     self.assertEqual(
