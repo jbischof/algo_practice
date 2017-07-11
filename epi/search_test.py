@@ -34,3 +34,27 @@ class TestSearch(unittest.TestCase):
     self.assertTrue(search.search_2d(a, 12))
     self.assertFalse(search.search_2d(a, -10))
     self.assertFalse(search.search_2d(a, 50))
+
+  def testPartition(self):
+    a = [2, 5, 7, 11, 3, 15, 9]
+    self.assertEqual(search.partition(a, 0, len(a) - 1), 4)
+    self.assertEqual(a, [2, 5, 7, 3, 9, 15, 11])
+    a = [3, 5, 2, 7, 6, 11, 1, 17, 0]
+    self.assertEqual(search.partition(a, 0, len(a) - 1), 0)
+    self.assertEqual(a, [0, 5, 2, 7, 6, 11, 1, 17, 3])
+
+  def testFindKSmallest(self):
+    a = [3, 5, 2, 7, 6, 11, 1, 17, 0]
+    self.assertEqual(search.find_kth_smallest(a, 3), 2)
+    self.assertEqual(search.find_kth_smallest(a, 0), 0)
+    self.assertEqual(search.find_kth_smallest(a, 9), 17)
+
+  def testFindMissingInt(self):
+    input_ints = range(256)
+    input_ints.pop()
+    self.assertEqual(search.find_missing_8bit_int(input_ints), 255)
+    input_ints = range(256)
+    input_ints.pop(23)
+    self.assertEqual(search.find_missing_8bit_int(input_ints), 23) 
+    input_ints = range(256)
+    self.assertRaises(ValueError, search.find_missing_8bit_int, input_ints)
