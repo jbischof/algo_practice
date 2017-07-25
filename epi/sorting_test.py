@@ -28,3 +28,19 @@ class TestSorting(unittest.TestCase):
         sorting.Event(9, 11),
         sorting.Event(9, 12),
         sorting.Event(13, 15)]), 4)
+  
+  def testPartitionObjArray(self):
+    # This test imperfect because many object orders map on to a correct
+    # partition. Need to work on robust test
+    Greg = sorting.Person("Greg", 14)
+    John = sorting.Person("John", 12)
+    Andy = sorting.Person("Andy", 11)
+    Jim = sorting.Person("Jim", 13)
+    Phil = sorting.Person("Phil", 12)
+    Bob = sorting.Person("Bob", 13)
+    Chip = sorting.Person("Chip", 13)
+    Tim = sorting.Person("Tim", 14)
+    a = [Greg, John, Andy, Jim, Phil, Bob, Chip, Tim]
+    sorting.partition_object_array(a, "age")
+    self.assertEqual(a, [Andy, Phil, John, Chip, Jim, Bob, Greg, Tim])
+
