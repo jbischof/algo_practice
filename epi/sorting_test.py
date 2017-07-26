@@ -30,8 +30,9 @@ class TestSorting(unittest.TestCase):
         sorting.Event(13, 15)]), 4)
   
   def testPartitionObjArray(self):
+    # TODO(bischof): improve test to only check partition is correct
     # This test imperfect because many object orders map on to a correct
-    # partition. Need to work on robust test
+    # partition.
     Greg = sorting.Person("Greg", 14)
     John = sorting.Person("John", 12)
     Andy = sorting.Person("Andy", 11)
