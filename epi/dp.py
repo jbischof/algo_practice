@@ -29,13 +29,12 @@ def count_score_combinations(plays, score):
     plays: Vector of values for each possible play.
     score: Final score.
   Returns:
-    Count of number of combinations.
+    Number of combinations.
   """
   
   plays.sort()
   # Matrix of score combinations
-  # Be careful about creating separate list for each row 
-  A = [([1] + [0] * score)[:] for _ in plays] 
+  A = [[1] + [0] * score for _ in plays] 
   
   # Fill in first row of A
   A[0] = [int(s % plays[0] == 0) for s in range(score + 1)] 
@@ -61,10 +60,10 @@ def edit_distance(a, b):
     Edit distance
   """
 
-  # Matrix to hold results for recursive calls
+  # Matrix to hold results for unique recursive calls
   # A[i, j] is _edit_distance_helper(a[:i], b[:j])
   n, m = len(a), len(b)
-  A = [([-1] * (m + 1))[:] for _ in range(n + 1)] 
+  A = [[-1] * (m + 1) for _ in range(n + 1)] 
 
   return _edit_distance_helper(n, m, a, b, A)
 
@@ -100,3 +99,82 @@ def _edit_distance_helper(i, j, a, b, A):
   ins_ed = _edit_distance_helper(i, j - 1, a, b, A)
   A[i][j] = 1 + min([del_ed, sub_ed, ins_ed])
   return A[i][j]
+
+
+def count_array_traversals(n, m):
+  """Count number of paths to traverse n x m 2D array.
+
+  Start at upper right; only possible moves are right and down.
+  Note: Analytic solution is choose(n + m - 2, m - 1)
+  Time complexity: O(n * m)
+  Space complexity: O(n * m)
+
+  Args:
+    n, m: dimensions of array
+  Returns:
+    Count of paths
+  """
+
+  # Matrix to hold results for recursive calls
+  A = [[-1] * m for _ in range(n)] 
+
+  # Record base case
+  A[0][0] = 1
+
+  # Start at end and work way back to beginning
+  return _count_array_traversals_helper(n - 1, m - 1, A)
+
+
+def _count_array_traversals_helper(i, j, A):
+  # If this calculation already done, return that
+  # Includes base case of (0, 0)
+  if A[i][j] >= 0:
+    return A[i][j]
+
+  # Answer is sum of up and left paths unless already at edge
+  ans = 0
+  if i > 0:
+    ans += _count_array_traversals_helper(i - 1, j, A)
+  if j > 0:
+    ans += _count_array_traversals_helper(i, j - 1, A)
+  A[i][j] = ans
+  return ans
+
+
+class Item(object):
+  """Class to hold item metadata for knapsack problem."""
+  def __init__(self, label, weight, value):
+    self.label = label 
+    self.weight = weight
+    self.value = value
+
+
+def knapsack(items, max_weight):
+  """Find combination of items with max value given weight constraint.
+
+  Time complexity: O(n * max_weight)
+  Space complexity: O(n * max_weight)
+
+  Args:
+    items: list of Item objects
+    max_weight: maximum weight capacity of knapsack
+  Returns:
+    Value of best combination
+  """
+
+  n = len(items)
+  # N x (max_weight + 1) matrix of memoized best values
+  # Need first column to be zero weight so that can consider replacing entire
+  # contents of knapsack
+  A = [[0] * (max_weight + 1) for _ in range(n)]
+  # Fill in first row
+  for w in range(max_weight + 1):
+    A[0][w] = items[0].value if items[0].weight <= w else 0
+  for i in range(1, n):
+    for w in range(max_weight + 1):
+      weight, value = items[i].weight, items[i].value
+      # Can't add item if already too heavy for weight
+      best_value_with = A[i - 1][w - weight] + value if weight <= w else 0
+      best_value_without = A[i - 1][w]
+      A[i][w] = max(best_value_with, best_value_without) 
+  return A[-1][-1]
