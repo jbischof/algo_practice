@@ -60,12 +60,11 @@ class BinaryTreeTest(unittest.TestCase):
 
   def testInorder(self):
     tree = self.ExampleTree()
-    self.assertEqual(
-      tree.inorder(), 
-      [28, 271, 0, 6, 561, 17, 3, 314, 2, 401, 641, 1, 257, 6, 271, 28])
-    self.assertEqual(
-      tree.inorder_no_space(), 
-      [28, 271, 0, 6, 561, 17, 3, 314, 2, 401, 641, 1, 257, 6, 271, 28])
+    expect_inorder = [28, 271, 0, 6, 561, 17, 3, 314, 2, 401, 641, 1, 257, 6,
+                      271, 28] 
+    self.assertEqual(tree.inorder(), expect_inorder)
+    self.assertEqual(tree.inorder_no_recursion(), expect_inorder)
+    self.assertEqual(tree.inorder_no_space(), expect_inorder)
 
   def testPostorder(self):
     tree = self.ExampleTree()

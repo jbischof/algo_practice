@@ -5,35 +5,42 @@ class Node():
     self.left = None
     self.right = None
 
+
 class BinaryTree():
   def __init__(self, root=None):
     self.root = root
 
+
   def __eq__(self, other):
-    """ Two binary trees are equal if their preorder and inorder traversals
-    are the same """
+    """Equality means identical preorder and inorder traversals."""
+
     return (self.inorder() == other.inorder() and 
         self.preorder() == other.preorder())
+
 
   def __neq__(self, other):
     return not self.__eq__(other)
 
+
   @classmethod
   def from_preorder_inorder(cls, preorder, inorder):
-    """ Construct a tree from its preorder and inorder traversals. 
+    """Construct a tree from its preorder and inorder traversals. 
     Args:
       preorder: A list of node values in preorder
       inorder: A list of node values in inorder
     Returns:
       A BinaryTree class
     """
+
     tree = cls()
     tree.root = BinaryTree.from_preorder_inorder_helper(preorder, inorder)
     return tree
 
+
   @staticmethod
   def from_preorder_inorder_helper(preorder, inorder):
-    """ Performs recursion for preorder/inorder constructor """
+    """Performs recursion for preorder/inorder constructor."""
+
     # Base case: two levels of tree. This happens with <3 nodes or 3 nodes where
     # the second level is full.
     if len(preorder) < 3 or (len(preorder) == 3 and inorder[1] == preorder[0]):
@@ -50,9 +57,11 @@ class BinaryTree():
         preorder[(1 + root_loc):], inorder[(root_loc + 1):])
     return root
 
+
   @staticmethod
   def preorder_inorder_base_case(preorder, inorder):
-    """ Base case for preorder/inorder reconstruction: 3 or fewer nodes. """
+    """Base case for preorder/inorder reconstruction: 3 or fewer nodes."""
+
     if not preorder:
       return None
     nomatch = preorder != inorder
@@ -65,8 +74,10 @@ class BinaryTree():
       root.right = Node(preorder.pop(0))
     return root 
 
+
   def preorder(self):
-    """ Returns pre-order traversal of tree """
+    """Returns pre-order traversal of tree."""
+
     ret = []
     self.preorder_helper(ret, self.root)
     return ret
@@ -80,8 +91,14 @@ class BinaryTree():
       self.preorder_helper(ret, node.right)
     return
 
+
   def inorder(self):
-    """ Returns in-order traversal of tree """
+    """Returns in-order traversal of tree.
+    
+    Time complexity: O(N)
+    Space complexity: O(H), where H is height of tree.
+    """
+
     ret = []
     self.inorder_helper(ret, self.root)
     return ret
@@ -95,11 +112,40 @@ class BinaryTree():
       self.inorder_helper(ret, node.right)
     return
 
+
+  def inorder_no_recursion(self):
+    """Returns in-order traversal without using recursion.
+
+    Time complexity: O(N)
+    Space complexity: O(H), where H is height of tree.
+    """
+
+    ret = []
+    stack = []
+    curr = self.root
+    
+    while stack or curr:
+      if curr:
+        # Going left
+        stack.append(curr)
+        curr = curr.left
+      else:
+        # Going up
+        curr = stack.pop()
+        ret.append(curr.value)
+        # Going right
+        curr = curr.right
+
+    return ret
+
+
   def postorder(self):
-    """ Returns post-order traversal of tree """
+    """Returns post-order traversal of tree."""
+
     ret = []
     self.postorder_helper(ret, self.root)
     return ret
+
 
   def postorder_helper(self, ret, node):
     if node.left:
@@ -110,13 +156,18 @@ class BinaryTree():
       ret.append(node.value)
     return
 
+
   def level_print(self):
-    """ Return list of lists of nodes in tree. Each list contains items from one
-    level in left-to-right order """
+    """Return list of lists of nodes in tree.
+    
+    Each list contains items from one level in left-to-right order.
+    """
+
     ret = []
     level = 0
     self.level_print_helper(self.root, ret, level)
     return ret
+
 
   def level_print_helper(self, node, ret, level):
     if node:
@@ -130,11 +181,13 @@ class BinaryTree():
       self.level_print_helper(node.right, ret, level + 1)
     return
 
+
   def is_height_balanced(self):
-    """ Checks if all left/right subtrees do not differ more than one level
-    in height """
+    """Checks if all subtrees do not differ more than one level in height."""
+
     is_bal, _ = self.is_height_balanced_helper(self.root)
     return is_bal
+
 
   def is_height_balanced_helper(self, node):
     left_depth, right_depth = 0, 0
@@ -150,14 +203,18 @@ class BinaryTree():
       is_bal = False
     return is_bal, max(left_depth, right_depth)
 
+
   def is_symmetric(self):
-    """ Checks if left and right subtrees are mirror images """
+    """Checks if left and right subtrees are mirror images."""
+
     if not self.root:
       return True
     return self.is_symmetric_helper(self.root.left, self.root.right)
 
+
   def is_symmetric_helper(self, left_node, right_node):
-    """ Compares left and right subtrees for equality recursively """
+    """Compares left and right subtrees for equality recursively."""
+
     # Case 1: both nodes empty
     if not left_node and not right_node:
       return True
@@ -169,9 +226,13 @@ class BinaryTree():
         self.is_symmetric_helper(left_node.left, right_node.right) and
         self.is_symmetric_helper(left_node.right, right_node.left))
 
+
   def get_ancestry(self, node):
-    """ Return list of ancestors of node. Only works if parent field is 
-    populated """
+    """Return list of ancestors of node.
+    
+    Only works if parent field is populated.
+    """
+
     # TODO(bischof): just need to return depth to avoid O(N) storage
     res = []
     while node.parent:
@@ -179,9 +240,13 @@ class BinaryTree():
       node = node.parent
     return res
 
+
   def least_common_ancestor(self, node1, node2):
-    """ Find the least common ancestor of two nodes. Only works if parent field 
-    is populated. """
+    """Find the least common ancestor of two nodes.
+    
+    Only works if parent field is populated. 
+    """
+
     # Find ancestry of both nodes
     ancestor1 = self.get_ancestry(node1)
     ancestor2 = self.get_ancestry(node2)
@@ -200,8 +265,10 @@ class BinaryTree():
       node2 = node2.parent
     return node1
 
+
   def inorder_no_space(self):
-    """ Return inorder traversal using O(1) space """
+    """Return inorder traversal using O(1) space."""
+
     ret = []
     node = self.root
     prev = None
