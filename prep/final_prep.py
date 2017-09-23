@@ -66,7 +66,6 @@ def longest_Mchar_substr(a, m):
   charpos = {}
   # BST holds sorted version of dictionary
   charpos_bst = bst.BST()
-  counter = 0
   while pos < len(a):
     char = a[pos]
     if char in charpos:
