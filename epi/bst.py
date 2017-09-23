@@ -3,17 +3,21 @@ import collections
 
 class BST(bt.BinaryTree):
   def check_valid(self):
-    """ Verifies binary tree has BST property using inorder traversal.
+    """Verifies binary tree has BST property using inorder traversal.
     If tree is BST, inorder should produce keys in sorted order.
     Time complexity: O(N) (each node traversed once)
-    Space complexity: O(1) """
+    Space complexity: O(1)
+    """
+
     # Empty tree trivially satisfies property
     if not self.root:
       return True
     return self.check_valid_helper(self.root, None)
 
+
   def check_valid_helper(self, node, prev):
-    """ Helper function for recursive validity check """
+    """Helper function for recursive validity check."""
+
     if node.left and not self.check_valid_helper(node.left, prev):
       return False
     if prev and node.value < prev.value:
@@ -24,17 +28,22 @@ class BST(bt.BinaryTree):
       return False
     return True
 
+
   def search_with_parent(self, value):
-    """ Search for value in BST, finding parent as well.
+    """Search for value in BST, finding parent as well.
+
+    Time Complexity: O(H), where H is height of tree
+    Space Complexity: O(1)
     Args:
-      value: Value to find
+      value: value to find
     Returns:
       (Node, parent node) tuple or None if not found
-    Time Complexity: O(H), where H is height of tree
-    Space Complexity: O(1) """
+    """
+
     if not self.root:
       return None
     return self._search_with_parent_helper(self.root, None, value)
+
 
   def _search_with_parent_helper(self, node, parent, value):
     if value == node.value:
@@ -48,22 +57,33 @@ class BST(bt.BinaryTree):
         return None 
       return self._search_with_parent_helper(node.right, node, value)
 
+
   def search(self, value):
-    """ Search for value in BST.
+    """Search for value in BST.
+
+    Time Complexity: O(H), where H is height of tree
+    Space Complexity: O(1)
     Args:
       value: Value to find
     Returns:
       Node if found for None if not 
-    Time Complexity: O(H), where H is height of tree
-    Space Complexity: O(1) """
+    """
+
     ret = self.search_with_parent(value)
     if ret is None:
       return None
     return ret[0]
 
+
   def insert(self, node):
-    """ Insert new value into BST.
-    Time complexity: O(log N) if balanced """
+    """Insert new value into BST.
+
+    Time complexity: O(log N) if balanced
+    Space complexity: O(1)
+    Args:
+      node: node to add to tree
+    """
+
     if not self.root:
       self.root = node
       return
@@ -82,13 +102,20 @@ class BST(bt.BinaryTree):
           current.left = node
           break
 
+
   def remove_value(self, value):
-    """ Remove first occurrence of value from BST
+    """Remove first occurrence of value from BST.
+
+    May need to remove recursively if node has two children.
+    TODO(bischof): rewrite without using search function for cleaner approach 
+    Time complexity: O(log N) if balanced
+    Space complexity: O(log N)
     Args:
       value: Value to be removed from tree
     Returns:
       Removed node or None if value not found
-    Time complexity: O(log N) if balanced """
+    """
+
     # Find node in tree with parent
     res = self.search_with_parent(value)
     if not res:
@@ -105,6 +132,9 @@ class BST(bt.BinaryTree):
         parent.left = next_largest
       elif parent and parent.right is node:
         parent.right = next_largest
+      else:
+        # Otherwise dealing with root node
+        self.root = next_largest
       next_largest.left = node.left
       next_largest.right = node.right
     elif node.left:
@@ -113,37 +143,59 @@ class BST(bt.BinaryTree):
         parent.left = node.left
       elif parent and parent.right is node:
         parent.right = node.left
+      else:
+        # Otherwise dealing with root node
+        self.root = node.left
     elif node.right:
       # If only one child, hook directly to parent node
       if parent and parent.left is node:
         parent.left = node.right
       elif parent and parent.right is node:
         parent.right = node.right
+      else:
+        # Otherwise dealing with root node
+        self.root = node.right
     else:
       # Node is childless, delete directly
       if parent and parent.left is node:
         parent.left = None
       elif parent and parent.right is node:
         parent.right = None
+      else:
+        # Otherwise dealing with root node
+        self.root = None
     # Clear and return node
     node.left = node.right = None
     return node
     
+
   def next_largest(self, value):
-    """ Search for next largest value in BST.
+    """Search for next largest value in BST.
+
+    Time Complexity: O(H), where H is height of tree
+    Space Complexity: O(1)
     Args:
       value: baseline value
     Returns:
       Node or None if 'value' larger than entire tree      
-    Time Complexity: O(H), where H is height of tree
-    Space Complexity: O(1) """
+    """
+
     return self.next_largest_helper(self.root, value, None)
 
+
   def next_largest_helper(self, node, value, last_largest):
-    """ Search for value with binary search, keeping track of the last largest
+    """Search for value with binary search, keeping track of the last largest
     value seen (which will be the closest in value by definition) in case
-    end search on empty left child (where won't remember last largest you saw.
+    end search on empty left child (where won't remember last largest you saw).
+
+    Args:
+      node: current node in traversal
+      value: baseline value
+      last_largest: Smallest value >= baseline value seen so far
+    Returns:
+      Node or None if 'value' larger than entire tree      
     """
+
     if value < node.value:
       last_largest = node
       if not node.left:
@@ -154,14 +206,21 @@ class BST(bt.BinaryTree):
         return last_largest
       return self.next_largest_helper(node.right, value, last_largest)
 
+
   def k_largest(self, k):
-    """ Return K largest values in BST by reverse inorder traversal
+    """Return K largest values in BST by reverse inorder traversal.
+
     Time complexity: O(H + k)
-    Space complexity: O(k) """
+    Space complexity: O(k)
+    Args:
+      k: Number values to return
+    """
+
     ret = []
     self._k_largest_helper(self.root, k, ret)
     return ret
   
+
   def _k_largest_helper(self, node, k, ret):
     if node.right:
       self._k_largest_helper(node.right, k, ret)
@@ -172,14 +231,19 @@ class BST(bt.BinaryTree):
     if node.left:
       self._k_largest_helper(node.left, k, ret)
 
+
   def k_smallest(self, k):
-    """ Return K smallest values in BST by inorder traversal
+    """Return K smallest values in BST by inorder traversal.
+
     Time complexity: O(H + k)
-    Space complexity: O(k) """
+    Space complexity: O(k)
+    """
+
     ret = []
     self._k_smallest_helper(self.root, k, ret)
     return ret
   
+
   def _k_smallest_helper(self, node, k, ret):
     if node.left:
       self._k_smallest_helper(node.left, k, ret)
@@ -190,39 +254,56 @@ class BST(bt.BinaryTree):
     if node.right:
       self._k_smallest_helper(node.right, k, ret)
 
-class Webpage():
+
+class Webpage(object):
   def __init__(self, id):
     self.id = id
 
-class WebpageIndex():
+
+class WebpageIndex(object):
   def __init__(self):
     self.hashmap = collections.Counter() 
     self.bst = BST()
 
+
   def update(self, page):
-    """ Update page visit counts with Webpage log
-    Args:
-      page: Webpage object
+    """Update page visit counts with Webpage log.
+
     Time complexity: O(log N) for BST pop and insert
     Space complexity: O(1)
+    Args:
+      page: Webpage object
     """
+
+    if page.id not in self.hashmap:
+      self.hashmap[page.id] = 1
+      self.bst.insert(bt.Node((1, page.id)))
+      return
     old_count = self.hashmap[page.id]
     self.hashmap[page.id] += 1
-    # Try to remove node and update count
     node = self.bst.remove_value((old_count, page.id))
-    # Create node if not in tree already
-    if not node:
-      node = bt.Node((0, page.id))
     # Update count and place in tree
-    node_val = (node.value[0] + 1, node.value[1])
-    self.bst.insert(bt.Node(node_val))
+    node.value = (node.value[0] + 1, node.value[1])
+    self.bst.insert(node)
+
 
   def update_list(self, page_list):
-    """ Perform update on list of webpages """
+    """Perform update on list of webpages.
+    
+    Time complexity: O(N * log(M + N)), where M current size of tree
+    Args:
+      page_list: list of Webpage objects
+    """
+
     for page in page_list:
       self.update(page)
 
+
   def top_k_visited(self, k):
-    """ Returns list of ids for k most visited pages """
+    """Returns list of ids for k most visited pages.
+    
+    Time complexity: O(H + k).
+    """
+
     return [val[1] for val in self.bst.k_largest(k)]
 

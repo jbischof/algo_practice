@@ -53,6 +53,7 @@ class TestBST(unittest.TestCase):
     p.parent = o
     return tree
     
+
   def testCheckValid(self):
     # Default tree is valid
     tree = self.ExampleTree()
@@ -61,6 +62,7 @@ class TestBST(unittest.TestCase):
     # checking each node's children separately
     tree.root.left.right.right.left.value = 10
     self.assertFalse(tree.check_valid())
+
 
   def testSearch(self):
     tree = self.ExampleTree()
@@ -73,6 +75,7 @@ class TestBST(unittest.TestCase):
     self.assertFalse(tree.search(15)) 
     self.assertFalse(tree.search(54)) 
     self.assertFalse(tree.search(4))
+
 
   def testSearchWithParent(self):
     tree = self.ExampleTree()
@@ -94,6 +97,7 @@ class TestBST(unittest.TestCase):
     self.assertFalse(tree.search_with_parent(54)) 
     self.assertFalse(tree.search_with_parent(4))
 
+
   def testInsert(self):
     tree = self.ExampleTree()
     node4 = bt.Node(4)
@@ -107,6 +111,7 @@ class TestBST(unittest.TestCase):
     tree = bst.BST()
     tree.insert(node4)
     self.assertEqual(tree.root, node4)
+
 
   def testRemove(self):
     # Remove leaf node
@@ -126,6 +131,38 @@ class TestBST(unittest.TestCase):
     self.assertEqual(tree.root.right.value, 47)
     self.assertEqual(tree.root.right.right.value, 53)
     self.assertEqual(tree.root.right.left.value, 23)
+    # Remove root node
+    tree = self.ExampleTree()
+    self.assertEqual(tree.root.value, 19)
+    self.assertEqual(tree.root.left.value, 7)
+    self.assertEqual(tree.root.right.value, 43)
+    tree.remove_value(19)
+    self.assertEqual(tree.root.value, 23)
+    self.assertEqual(tree.root.left.value, 7)
+    self.assertEqual(tree.root.right.value, 43)
+    # Remove root node from otherwise empty tree
+    tree = bst.BST(bt.Node(19)) 
+    self.assertEqual(tree.root.value, 19)
+    tree.remove_value(19)
+    self.assertEqual(tree.root, None)
+    # Remove root node from lopsided right-only tree
+    tree = self.ExampleTree()
+    tree.root.left = None
+    self.assertEqual(tree.root.value, 19)
+    self.assertEqual(tree.root.right.value, 43)
+    tree.remove_value(19)
+    self.assertEqual(tree.root.value, 43)
+    self.assertEqual(tree.root.left.value, 23)
+    self.assertEqual(tree.root.right.value, 47)
+    # Remove root node from lopsided right-only tree
+    tree = self.ExampleTree()
+    tree.root.right = None
+    self.assertEqual(tree.root.value, 19)
+    tree.remove_value(19)
+    self.assertEqual(tree.root.value, 7)
+    self.assertEqual(tree.root.left.value, 3)
+    self.assertEqual(tree.root.right.value, 11)
+    
 
   def testNextLargest(self):
     tree = self.ExampleTree()
@@ -135,15 +172,18 @@ class TestBST(unittest.TestCase):
     self.assertEqual(tree.next_largest(31), tree.root.right.left.right)
     self.assertEqual(tree.next_largest(24), tree.root.right.left.right.left)
 
+
   def testKLargest(self):
     tree = self.ExampleTree()
     self.assertEqual(tree.k_largest(1), [53])
     self.assertEqual(tree.k_largest(4), [53, 47, 43, 41])
 
+
   def testKSmallest(self):
     tree = self.ExampleTree()
     self.assertEqual(tree.k_smallest(1), [2])
     self.assertEqual(tree.k_smallest(4), [2, 3, 5, 7])
+
 
   def testWebpageIndex(self):
     index = bst.WebpageIndex()
