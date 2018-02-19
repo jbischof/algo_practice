@@ -37,3 +37,15 @@ class TestStackQueue(unittest.TestCase):
     self.assertEqual(queue.pop(), 10)
     self.assertEqual(queue.pop(), 7)
     self.assertEqual(queue.pop(), None)
+
+  def testStackSort(self):
+    stack = sq.Stack()
+    stack.push(4)
+    stack.push(7)
+    stack.push(11)
+    stack.push(3)
+    stack.push(10)
+    self.assertEqual(stack.stack, [4, 7, 11, 3, 10])
+    stack.sort()
+    self.assertEqual(stack.stack, [11, 10, 7, 4, 3])
+
