@@ -152,6 +152,53 @@ class Tree(object):
       node = node.parent
     return node.parent
 
+  def __eq__(self, other):
+    """Check if two trees are equal."""
+    return self.eq_helper(self.root, other.root)
+
+  def __ne__(self, other):
+    """Check if two trees are not equal."""
+    return not self.eq_helper(self.root, other.root)
+
+  def eq_helper(self, node_self, node_other):
+    """Recursive function to compare trees at one position."""
+    # Empty trees are equal
+    if not node_self and not node_other:
+      return True
+    # One node empty when other is not means not equal
+    if (not node_self and node_other) or (node_self and not node_other):
+      return False
+    # Compare values if both exist
+    if not (node_self.value == node_other.value):
+      return False
+    # Recurse on children if both exist and equal values
+    return (
+        self.eq_helper(node_self.left, node_other.left) and 
+        self.eq_helper(node_self.right, node_other.right)) 
+
+  def has_subtree(self, other):
+    """Returns true if `other` is a subtree.
+    
+    Time complexity: O(|self| * |other|)
+    Space complexity: O(log|self| + log|other|)
+
+    However, average time complexity likely much lower than worst case. If root
+    of subtree occurs k << |other| times then time complexity is 
+    O(|self| + k|other|).
+    """
+
+    return self.has_subtree_helper(self.root, other)
+
+  def has_subtree_helper(self, node, other):
+    """Recursive function to look for subtree `other`."""
+    if not node:
+      return False
+    if Tree(node) == other:
+      return True
+    return (
+        self.has_subtree_helper(node.left, other) or
+        self.has_subtree_helper(node.right, other))
+
     
 def from_sorted_list_helper(a):
   """Returns the median value in a sorted list as a Node, or None if empty.

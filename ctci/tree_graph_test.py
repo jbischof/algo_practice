@@ -160,3 +160,32 @@ class TreeGraphTest(unittest.TestCase):
     # Create a cycle
     depend_pairs.append(('c', 'a'))
     self.assertFalse(tg.build_order(jobs, depend_pairs))
+
+  def testTreeEquality(self):
+    a = [0, 3, 4, 5, 11, 15, 17]
+    tree1 = tg.Tree.from_sorted_list(a)
+    tree2 = tg.Tree.from_sorted_list(a)
+    self.assertTrue(tree1 == tree2)
+    self.assertFalse(tree1 != tree2)
+    tree1.root.left.left = None
+    self.assertFalse(tree1 == tree2)
+    self.assertTrue(tree1 != tree2)
+    tree1 = tg.Tree.from_sorted_list(a)
+    tree1.root.right.value = 14
+    self.assertFalse(tree1 == tree2)
+    self.assertTrue(tree1 != tree2)
+
+  def testHasSubtree(self):
+    a = [0, 3, 4, 5, 11, 15, 17]
+    b = [0, 3, 4]
+    c = [1, 3, 4]
+    tree1 = tg.Tree.from_sorted_list(a)
+    tree2 = tg.Tree.from_sorted_list(b)
+    tree3 = tg.Tree.from_sorted_list(b)
+    tree4 = tg.Tree.from_sorted_list(c)
+    # Normal subtree
+    self.assertTrue(tree1.has_subtree(tree2))
+    # Subtree is entire tree
+    self.assertTrue(tree2.has_subtree(tree3))
+    # Not subtree
+    self.assertFalse(tree1.has_subtree(tree4))
