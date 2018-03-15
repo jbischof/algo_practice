@@ -217,3 +217,86 @@ def _all_parens_helper(prefix, opened, remaining, ret):
     prefix.append('(')
     _all_parens_helper(copy.deepcopy(prefix), opened + 1, remaining - 1, ret)
 
+
+def ways_to_make_change(n):
+  """Count the number of ways to make change for `n` cents.
+
+  Problem assumes standard U.S. coinage.
+
+  Time complexity: O(N)
+  Space complexity: O(N)
+
+  Args:
+    n: Number of cents needed
+  Returns:
+    Integer giving count of ways.
+  """
+
+  coins = (25, 10, 5, 1)
+  memo = [[None] * (n + 1) for j in xrange(len(coins))]
+  return _ways_to_make_change_helper(n, coins, 0, memo)
+
+
+def _ways_to_make_change_helper(n, coins, index, memo):
+  """Recursive function to compute ways to make change for `n` cents.
+
+  Args:
+    n: Number of cents needed
+    coins: List of coin denominations (in decreasing order)
+    index: Index of coin currently in consideration
+    memo: Memo of previous (up to index, n) combinations computed
+  Returns:
+    Integer giving count of ways.
+  """
+
+  # Base case: tally reaches `n`
+  if n == 0:
+    return 1
+
+  # Otherwise out of denominations, so give up
+  if index >= len(coins):
+    return 0
+
+  # Look up memoized answer if available
+  if memo[index][n] is not None:
+    return memo[index][n]
+
+  val = coins[index]
+  ans = 0
+  j = 0  # Number of coins of this type used
+  while j * val <= n:
+    ans += _ways_to_make_change_helper(n - j * val, coins, index + 1, memo) 
+    j += 1
+
+  memo[index][n] = ans
+  return ans
+
+
+def ways_to_make_change_iter(n):
+  """Iterative version of `ways_to_make_change`.
+
+  Same time and space complexity, but avoiding recursion.
+
+  Key insight: iterate through memo explicitly using recursion
+    num_ways(n, coins[1, ..., k]) = 
+        num_ways(n, coins[1, ..., k - 1]) +
+            num_ways(n - j*val, coins[1, ..., k])
+  First row needs to be filled in manually. First column (n=0) will be set to 1.
+
+  Args:
+    n: Number of cents needed
+  Returns:
+    Integer giving count of ways.
+  """
+
+  coins = (1, 5, 10, 25)
+  memo = [[None] * (n + 1) for j in xrange(len(coins))]
+  memo[0] = [int(j % coins[0] == 0) for j in xrange(n + 1)]
+  for k in xrange(1, len(coins)):
+    val = coins[k]
+    memo[k][0] = 1
+    for j in xrange(1, n + 1):
+      ways_without_k = memo[k - 1][j]
+      ways_with_k = memo[k][j - val] if j - val >= 0 else 0
+      memo[k][j] = ways_without_k + ways_with_k
+  return memo[len(coins) - 1][n]

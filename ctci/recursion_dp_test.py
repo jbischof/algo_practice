@@ -65,3 +65,22 @@ class RecursionDPTest(unittest.TestCase):
     self.assertItemsEqual(
         rdp.all_parens(3),
         ['((()))', '(()())', '(())()', '()(())', '()()()'])
+
+  def testWaysToMakeChange(self):
+    # Ways to make change for 25 cents
+    enum_ways25 = (
+        (1, 0, 0, 0),
+        (0, 2, 1, 0),
+        (0, 2, 0, 5),
+        (0, 1, 3, 0),
+        (0, 1, 2, 5),
+        (0, 1, 1, 10),
+        (0, 1, 0, 15),
+        (0, 0, 5, 0),
+        (0, 0, 4, 5),
+        (0, 0, 3, 10),
+        (0, 0, 2, 15),
+        (0, 0, 1, 20),
+        (0, 0, 0, 25))
+    self.assertEqual(rdp.ways_to_make_change(25), len(enum_ways25))
+    self.assertEqual(rdp.ways_to_make_change_iter(25), len(enum_ways25))
