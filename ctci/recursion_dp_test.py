@@ -84,3 +84,13 @@ class RecursionDPTest(unittest.TestCase):
         (0, 0, 0, 25))
     self.assertEqual(rdp.ways_to_make_change(25), len(enum_ways25))
     self.assertEqual(rdp.ways_to_make_change_iter(25), len(enum_ways25))
+
+  def testHighestBoxStack(self):
+    boxes = [
+        rdp.Box(0.5, 1, 2),
+        rdp.Box(1, 2, 3),
+        rdp.Box(1, 3, 5),
+        rdp.Box(2, 2, 2),
+        rdp.Box(2, 7, 10),
+        rdp.Box(3, 3, 3)]
+    self.assertEqual(rdp.highest_box_stack(boxes), 17)

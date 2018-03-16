@@ -300,3 +300,79 @@ def ways_to_make_change_iter(n):
       ways_with_k = memo[k][j - val] if j - val >= 0 else 0
       memo[k][j] = ways_without_k + ways_with_k
   return memo[len(coins) - 1][n]
+
+
+class Box(object):
+  def __init__(self, width, length, height):
+    self.width = width
+    self.length = length
+    self.height = height
+    self.best_height = None 
+
+  def __lt__(self, other):
+    return (
+        self.width < other.width and 
+        self.height < other.height and 
+        self.length < other.length)
+
+  def __gt__(self, other):
+    return (
+        self.width > other.width and 
+        self.height > other.height and 
+        self.length > other.length)
+
+
+def highest_box_stack(boxes):
+  """Determine highest possible stack of boxes.
+
+  Only boxes with strictly larger width, height, and length can be placed
+  underneath another. Uses graph representation where directed edge A->B means
+  that vertex `A` can be stacked below vertex `B`.
+
+  Time complexity: O(|V|^2 + |E|), where |V| is the number of boxes and |E| is
+      number of pairs that are stackable (can absorb into |V|^2 for worst case).
+      While each node and edge only visited once, takes |V|^2 time to construct
+      the graph.
+  Space complexity: O(|V| + |E|) for recursion stack, graph and memo. If just 
+      taking edges as worst case, O(|V|^2)
+
+  Args:
+    boxes: An iterable of `Box` objects.
+  Returns:
+    Float with highest value.
+  """
+
+  # Make graph out of boxes so only do size comparisons once.
+  # Directed edge A->B means that box `A` can be placed under box `B`.
+  graph = {}
+  for j in xrange(len(boxes)):
+    graph[j] = [] 
+    for k in xrange(len(boxes)):
+      if boxes[j] > boxes[k]:
+        graph[j].append(k)
+
+  max_height = 0
+  for j in xrange(len(boxes)):
+    max_height = max(
+        max_height, 
+        _highest_box_stack_from_index(j, graph, boxes))
+  return max_height
+  
+
+def _highest_box_stack_from_index(index, graph, boxes):
+  """Determine largest height of possible stack with index as lowest box."""
+
+  # Return memo if partial stack already measured
+  if boxes[index].best_height:
+    return boxes[index].best_height 
+
+  max_height = boxes[index].height
+
+  for edge in graph[index]:
+    max_height = max(
+        max_height,
+        boxes[index].height + _highest_box_stack_from_index(edge, graph, boxes))
+
+  # Make memo of answer
+  boxes[index].best_height = max_height
+  return max_height
