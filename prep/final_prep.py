@@ -4,10 +4,12 @@ This mimics the actual interview conditions.
 """
 import heapq
 import imp
+import collections
 import sys
 sys.path.append('../epi/')
 import binary_tree as bt
 import bst
+
 
 def longest_twochar_substr(a):
   """Find the longest substring with at most two unique characters.
@@ -85,3 +87,48 @@ def longest_Mchar_substr(a, m):
     charpos.pop(low_key)
     substr = [low_val + 1, pos] 
   return a[best_substr[0] : (best_substr[1] + 1)] 
+
+
+def is_deck_valid(a):
+  """Check if array of ints can be partitioned into consecutive triplets.
+
+  Array represents `deck` of numbered cards. Duplicates are possible.
+
+  Time complexity: O(N log N). Time dominated by sorting the keys.
+  Space complexity: O(N). Space needed to create counter and key list.
+
+  Args:
+    a: An iterable of ints
+  Returns:
+    Bool.
+  """
+
+  if len(a) % 3 != 0:
+    return False
+
+  counter = collections.Counter(a)
+  # Get sorted keys from collection
+  sort_counts = [[key, counter[key]] for key in sorted(counter.keys())]
+  index = 0
+  max_index = len(sort_counts) - 3 
+  while index <= max_index:
+    c0, c1, c2 = (
+        sort_counts[index][0],
+        sort_counts[index + 1][0], 
+        sort_counts[index + 2][0])
+    # Check that three keys consecutive and all have counts
+    if (
+        c1 - c0 == 1 and sort_counts[index + 1][1] and
+        c2 - c0 == 2 and sort_counts[index + 2][1]):
+      sort_counts[index][1] -= 1
+      sort_counts[index + 1][1] -= 1
+      sort_counts[index + 2][1] -= 1
+      while index <= max_index and not sort_counts[index][1]:
+        index += 1
+    else:
+      return False
+  # Make sure nothing left at end of list 
+  if sort_counts[max_index + 1][1] or sort_counts[max_index + 2][1]:
+    return False
+  return True
+
