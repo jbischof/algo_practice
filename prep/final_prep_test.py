@@ -8,14 +8,6 @@ class TestFinalPrep(unittest.TestCase):
                      'baaabb')
     self.assertEqual(fp.longest_Mchar_substr('ababcbcbaaabbdef', 2),
                      'baaabb')
-    
-  def testFindMOrderConnections(self):
-    a = np.matrix([[0, 1, 1, 0, 0, 0],
-                   [1, 0, 1, 1, 0, 0],
-                   [1, 1, 0, 0, 0, 0],
-                   [0, 1, 0, 0, 1, 0],
-                   [0, 0, 0, 1, 0, 1],
-                   [0, 0, 0, 0, 1, 0]])
 
   def testIsDeckValid(self):
     deck = [1, 1, 2, 2, 3, 3, 3, 4, 5]
@@ -24,3 +16,23 @@ class TestFinalPrep(unittest.TestCase):
     deck.pop(4)
     self.assertFalse(fp.is_deck_valid(deck))
 
+  def testIsRoot(self):
+    # A genuine tree
+    adj_list = {
+        'a': set('bc'),
+        'b': set('de'),
+        'c': set('f'),
+        'd': set(),
+        'e': set(),
+        'f': set()
+    }
+    self.assertTrue(fp.is_tree(adj_list))
+    # Add cycle
+    adj_list['c'].add('e')
+    self.assertFalse(fp.is_tree(adj_list))
+    adj_list['c'].remove('e')
+    # Add other tree
+    adj_list['g'] = set('hi')
+    adj_list['h'] = set()
+    adj_list['i'] = set()
+    self.assertFalse(fp.is_tree(adj_list))

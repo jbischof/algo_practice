@@ -132,3 +132,61 @@ def is_deck_valid(a):
     return False
   return True
 
+
+def is_tree(adj_list):
+  """Returns true if graph is a DAG (tree).
+
+  Time complexity: O(|V| + |E|) for DFS and recording all nodes
+  Space complexity: O(|V|) for node sets
+
+  Args:
+    adj_list: A dictionary mapping node name to set of connected nodes.
+  Returns:
+    Bool.
+  """
+
+  # Determine set of candidates for root: parent, never a child
+  # Value `1` means candidate for root; value `0` means blacklisted
+  only_parents = {}
+  # Make record of all nodes seen
+  all_nodes = set()
+  for node, edges in adj_list.iteritems():
+    all_nodes.add(node)
+    if node not in only_parents:
+      only_parents[node] = 1
+    for edge in edges:
+      only_parents[edge] = 0
+
+  edge_cands = [node for node, val in only_parents.iteritems() if val == 1]
+  if len(edge_cands) != 1:
+    return False
+
+  # Conduct DFS starting from candidate root
+  root = edge_cands.pop()
+  visited = set()
+  if not _is_root_helper(root, adj_list, visited):
+    return False
+  # Make sure all nodes visited
+  if all_nodes - visited:
+    return False
+  return True 
+
+
+def _is_root_helper(current, adj_list, visited):
+  """Recursive function to traverse graph checking if tree.
+
+  Args:
+    current: Name of node being visited
+    adj_list: See `is_root`
+    visited: Set of nodes already visited
+  Returns:
+    Bool. False if any node visited twice, True otherwise.
+  """
+
+  if current in visited:
+    return False
+  visited.add(current)
+  for edge in adj_list[current]:
+    if not _is_root_helper(edge, adj_list, visited):
+      return False
+  return True
