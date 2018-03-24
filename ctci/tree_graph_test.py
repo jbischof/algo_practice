@@ -4,57 +4,6 @@ import tree_graph as tg
 import unittest
 
 class TreeGraphTest(unittest.TestCase):
-  def ExampleTree(self):
-    """An example tree with parent connections."""
-    a = tg.Node(314)
-    b = tg.Node(6)
-    c = tg.Node(271)
-    d = tg.Node(28)
-    e = tg.Node(0)
-    f = tg.Node(561)
-    g = tg.Node(3)
-    h = tg.Node(17)
-    i = tg.Node(6)
-    j = tg.Node(2)
-    k = tg.Node(1)
-    l = tg.Node(401)
-    m = tg.Node(641)
-    n = tg.Node(257)
-    o = tg.Node(271)
-    p = tg.Node(28)
-    tree = tg.Tree(a)
-    a.left = b
-    b.parent = a
-    b.left = c
-    c.parent = b
-    c.left = d
-    d.parent = c
-    c.right = e
-    e.parent = c
-    b.right = f
-    f.parent = b
-    f.right = g
-    g.parent = f
-    g.left = h
-    h.parent = g
-    a.right = i
-    i.parent = a
-    i.left = j
-    j.parent = i
-    j.right = k
-    k.parent = j
-    k.left = l
-    l.parent = k
-    l.right = m
-    m.parent = l
-    k.right = n
-    n.parent = k
-    i.right = o
-    o.parent = i
-    o.right = p
-    p.parent = o
-    return tree
-
   def testIsConnected(self):
     graph = tg.Graph({
       'a': ['b', 'e'],
@@ -84,6 +33,12 @@ class TreeGraphTest(unittest.TestCase):
     a = [0, 3, 4, 5, 11, 15, 17]
     tree = tg.Tree.from_sorted_list(a)
     self.assertEqual(tree.inorder(), a)
+
+  def testBFS(self):
+    a = [0, 3, 4, 5, 11, 15, 17]
+    expect_bfs = [5, 3, 15, 0, 4, 11, 17]
+    tree = tg.Tree.from_sorted_list(a)
+    self.assertEqual(tree.bfs(), expect_bfs)
 
   def testLevelLists(self):
     a = [0, 3, 4, 5, 11, 15, 17]

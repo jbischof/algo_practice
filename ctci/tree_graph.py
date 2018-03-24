@@ -71,6 +71,28 @@ class Tree(object):
     ret.append(node.value)
     self.inorder_helper(node.right, ret) 
 
+  def bfs(self):
+    """Returns BFS of tree.
+    
+    Time complexity: O(N) for traversal
+    Space complexity: O(2^(H-1)) for holding lowest level of complete tree
+        in queue. This is significantly more than DFS, which has a worst case of
+        O(H).
+    """
+    
+    ret = []
+    queue = collections.deque()
+    if self.root:
+      queue.append(self.root)
+    while queue:
+      current = queue.popleft()
+      ret.append(current.value)
+      if current.left:
+        queue.append(current.left)
+      if current.right:
+        queue.append(current.right)
+    return ret
+
   def level_lists(self):
     """Write tree values into separate list for each level.
     
