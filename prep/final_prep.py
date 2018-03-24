@@ -164,7 +164,7 @@ def is_tree(adj_list):
   # Conduct DFS starting from candidate root
   root = edge_cands.pop()
   visited = set()
-  if not _is_root_helper(root, adj_list, visited):
+  if not is_tree_helper(root, adj_list, visited):
     return False
   # Make sure all nodes visited
   if all_nodes - visited:
@@ -172,7 +172,7 @@ def is_tree(adj_list):
   return True 
 
 
-def _is_root_helper(current, adj_list, visited):
+def is_tree_helper(current, adj_list, visited):
   """Recursive function to traverse graph checking if tree.
 
   Args:
@@ -187,6 +187,6 @@ def _is_root_helper(current, adj_list, visited):
     return False
   visited.add(current)
   for edge in adj_list[current]:
-    if not _is_root_helper(edge, adj_list, visited):
+    if not is_tree_helper(edge, adj_list, visited):
       return False
   return True
