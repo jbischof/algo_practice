@@ -190,3 +190,26 @@ def is_tree_helper(current, adj_list, visited):
     if not is_tree_helper(edge, adj_list, visited):
       return False
   return True
+
+
+def is_subset_sum(a, k):
+  """Determine if any subset of positive int array sums to k.
+
+  Args:
+    a: List of positive integers.
+    k: Integer.
+
+  Returns:
+    Bool.
+  """
+
+  # Base cases:
+  if k == 0:  # Hit target
+    return True
+  if k < 0:  # Overshot
+    return False
+  if not a:  # Nothing left with k > 0
+    return False
+
+  # Recursive case: k > 0 and items left
+  return is_subset_sum(a[:-1], k) or is_subset_sum(a[:-1], k - a[-1])

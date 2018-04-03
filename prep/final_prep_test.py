@@ -36,3 +36,7 @@ class TestFinalPrep(unittest.TestCase):
     adj_list['h'] = set()
     adj_list['i'] = set()
     self.assertFalse(fp.is_tree(adj_list))
+
+  def testIsSubsetSum(self):
+    self.assertTrue(fp.is_subset_sum([8, 6, 7, 5, 3, 10, 9], 15))
+    self.assertFalse(fp.is_subset_sum([11, 6, 5, 1, 7, 13, 12], 15))
