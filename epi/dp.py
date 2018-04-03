@@ -28,6 +28,7 @@ def count_score_combinations(plays, score):
   Args:
     plays: Vector of values for each possible play.
     score: Final score.
+
   Returns:
     Number of combinations.
   """
@@ -56,6 +57,7 @@ def edit_distance(a, b):
 
   Args:
     a, b: strings
+
   Returns:
     Edit distance
   """
@@ -75,6 +77,7 @@ def _edit_distance_helper(i, j, a, b, A):
     i, j: Index (1-based) to truncate a, b (only working on prefixes)
     a, b: Strings with which to compute edit distance
     A: Array to store intermediate results (or -1 if not yet computed)
+
   Returns:
     Edit distance between a[:i] and b[:j]
   """
@@ -111,6 +114,7 @@ def count_array_traversals(n, m):
 
   Args:
     n, m: dimensions of array
+
   Returns:
     Count of paths
   """
@@ -158,6 +162,7 @@ def knapsack(items, max_weight):
   Args:
     items: list of Item objects
     max_weight: maximum weight capacity of knapsack
+
   Returns:
     Value of best combination
   """
@@ -178,3 +183,46 @@ def knapsack(items, max_weight):
       best_value_without = A[i - 1][w]
       A[i][w] = max(best_value_with, best_value_without) 
   return A[-1][-1]
+
+
+def pick_up_coins_payoff(a):
+  """Determine max payout for first player in pick up coins game.
+
+  Rules: An even number of coins of various denominations are placed in a row.
+    Each turn players can pick up a coin on the left or right end of the row.
+    Play continues until all coins are picked up.
+
+  Time complexity: O(N^2)
+  Space complexity: O(N^2)
+
+  Args:
+    a: An list of ints giving the values of coins in order.
+
+  Returns:
+    Int with max payout.
+  """
+
+  memo = [[0] * len(a) for _ in xrange(len(a))]
+
+  return _payoff_helper(0, len(a) - 1, a, memo)
+
+
+def _payoff_helper(left_pos, right_pos, a, memo):
+  if left_pos > right_pos:
+    return 0
+
+  if memo[left_pos][right_pos]:
+    return memo[left_pos][right_pos]
+
+  left_reward = (
+      a[left_pos] + min(_payoff_helper(left_pos + 1, right_pos - 1, a, memo),
+                        _payoff_helper(left_pos + 2, right_pos, a, memo)))
+
+  right_reward = (
+      a[right_pos] + min(_payoff_helper(left_pos + 1, right_pos - 1, a, memo),
+                         _payoff_helper(left_pos, right_pos - 2, a, memo)))
+
+  memo[left_pos][right_pos] = max(left_reward, right_reward)
+  return memo[left_pos][right_pos]
+
+

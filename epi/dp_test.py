@@ -39,3 +39,6 @@ class DPTest(unittest.TestCase):
              dp.Item('O', 40, 220),
              dp.Item('P', 10, 99)]
     self.assertEqual(dp.knapsack(items, 130), 695)
+
+  def testPickUpCoinsPayoff(self):
+    self.assertEqual(dp.pick_up_coins_payoff([5, 25, 10, 1]), 26)
