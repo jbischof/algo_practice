@@ -195,6 +195,9 @@ def is_tree_helper(current, adj_list, visited):
 def is_subset_sum(a, k):
   """Determine if any subset of positive int array sums to k.
 
+  Time complexity: O(N * 2^N), size of power set * time to verify sum of set
+  Space complexity: O(N) from maximum recursion depth
+
   Args:
     a: List of positive integers.
     k: Integer.
