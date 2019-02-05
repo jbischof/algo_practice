@@ -65,6 +65,26 @@ class TreeTest(unittest.TestCase):
                       271, 28] 
     self.assertEqual(tree.inorder(), expect_inorder)
 
+  def testInorderGenerator(self):
+    tree = self.ExampleTree()
+    expect_inorder = [28, 271, 0, 6, 561, 17, 3, 314, 2, 401, 641, 1, 257, 6,
+                      271, 28] 
+    traversal = list(tree.inorder_generator())
+    self.assertEqual(traversal, expect_inorder)
+
+  def testInorderNoRecursion(self):
+    tree = self.ExampleTree()
+    expect_inorder = [28, 271, 0, 6, 561, 17, 3, 314, 2, 401, 641, 1, 257, 6,
+                      271, 28] 
+    self.assertEqual(tree.inorder_no_recursion(), expect_inorder)
+
+  def testInorderNoRecursionGenerator(self):
+    tree = self.ExampleTree()
+    expect_inorder = [28, 271, 0, 6, 561, 17, 3, 314, 2, 401, 641, 1, 257, 6,
+                      271, 28] 
+    traversal = list(tree.inorder_no_recursion_generator())
+    self.assertEqual(traversal, expect_inorder)
+
   def testPostorder(self):
     tree = self.ExampleTree()
     self.assertEqual(

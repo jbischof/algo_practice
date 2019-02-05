@@ -6,6 +6,7 @@ class Node(object):
     self.left = left
     self.right = right
     self.parent = parent
+    self.visited = False
 
 
 class BinaryTree(object):
@@ -25,13 +26,8 @@ class BinaryTree(object):
       return
 
     traversal.append(node.data)
-
-    if node.left:
-      self.preorder_helper(node.left, traversal)
-
-    if node.right:
-      self.preorder_helper(node.right, traversal)
-
+    self.preorder_helper(node.left, traversal)
+    self.preorder_helper(node.right, traversal)
     return
 
   def inorder(self):
@@ -46,13 +42,84 @@ class BinaryTree(object):
     if not node:
       return
 
-    if node.left:
-      self.inorder_helper(node.left, traversal)
-
+    self.inorder_helper(node.left, traversal)
     traversal.append(node.data)
+    self.inorder_helper(node.right, traversal)
+    return
 
-    if node.right:
-      self.inorder_helper(node.right, traversal)
+  def inorder_generator(self):
+    """Return inorder traversal of tree in generator form."""
+
+    for val in self.inorder_helper_generator(self.root):
+      yield val
+
+  def inorder_helper_generator(self, node):
+    # Base case: node is empty
+    if not node:
+      return
+
+    for val in self.inorder_helper_generator(node.left):
+      yield val
+
+    yield(node.data)
+
+    for val in self.inorder_helper_generator(node.right):
+      yield val
+
+    return
+
+
+  def inorder_no_recursion(self):
+    """Inorder recursion with explicit stack.
+    
+    Time: O(N)
+    Space: O(H), or O(N) if count visited bools.
+
+    Returns:
+      List of traversal data.
+    """
+
+    traversal, stack = [], []
+    stack.append(self.root)
+
+    while stack:
+      node = stack.pop()
+      if node.right and not node.right.visited:
+        stack.append(node.right)
+        node.right.visited = True
+      if not node.left or node.left.visited:
+        # Only append if left side empty or visited
+        traversal.append(node.data)
+        node.visited = True
+      elif node.left:
+        stack.extend([node, node.left])
+
+    return traversal
+
+  def inorder_no_recursion_generator(self):
+    """Inorder recursion with explicit stack.
+    
+    Time: O(N)
+    Space: O(H), or O(N) if count visited bools.
+
+    Returns:
+      Generator for traversal data
+    """
+
+    stack = []
+    stack.append(self.root)
+
+    while stack:
+      node = stack.pop()
+      if node.right and not node.right.visited:
+        stack.append(node.right)
+        node.right.visited = True
+      if not node.left or node.left.visited:
+        # Only append if left side empty or visited
+        yield node.data
+        node.visited = True
+      elif node.left:
+        stack.extend([node, node.left])
 
     return
 
@@ -68,14 +135,9 @@ class BinaryTree(object):
     if not node:
       return
 
-    if node.left:
-      self.postorder_helper(node.left, traversal)
-
-    if node.right:
-      self.postorder_helper(node.right, traversal)
-
+    self.postorder_helper(node.left, traversal)
+    self.postorder_helper(node.right, traversal)
     traversal.append(node.data)
-
     return
 
   def is_height_balanced(self):
