@@ -40,3 +40,4 @@ class TestFinalPrep(unittest.TestCase):
   def testIsSubsetSum(self):
     self.assertTrue(fp.is_subset_sum([8, 6, 7, 5, 3, 10, 9], 15))
     self.assertFalse(fp.is_subset_sum([11, 6, 5, 1, 7, 13, 12], 15))
+    self.assertTrue(fp.is_subset_sum([11, 6, 5, 1, 7, 13, 15], 15))
