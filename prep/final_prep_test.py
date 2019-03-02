@@ -41,3 +41,13 @@ class TestFinalPrep(unittest.TestCase):
     self.assertTrue(fp.is_subset_sum([8, 6, 7, 5, 3, 10, 9], 15))
     self.assertFalse(fp.is_subset_sum([11, 6, 5, 1, 7, 13, 12], 15))
     self.assertTrue(fp.is_subset_sum([11, 6, 5, 1, 7, 13, 15], 15))
+
+  def testPartitionArrayWeight(self):
+    a = [5, 6, 11, 20, 3, 11, 6, 10, 2, 2, 1]
+    self.assertEqual(fp._partition_array_weight(a, 4, 22), [
+        fp.Partition(2, 22),
+        fp.Partition(3, 20),
+        fp.Partition(6, 20),
+        fp.Partition(10, 15)])
+    self.assertFalse(fp._partition_array_weight(a, 4, 21))
+    self.assertEqual(fp.min_cargo_capacity(a, 4), 22)

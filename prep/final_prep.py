@@ -218,3 +218,72 @@ def is_subset_sum(a, k, offset=0):
   return ( 
       is_subset_sum(a, k, offset + 1) or 
       is_subset_sum(a, k - a[offset], offset + 1))
+
+
+class Partition(object):
+  def __init__(self, end=None, total=0):
+    self.end = end
+    self.total = total
+
+  def __eq__(self, other):
+    return (self.end, self.total) == (other.end, other.total)
+
+  def __ne__(self, other):
+    return not self.__eq__(other)
+
+
+def _partition_array_weight(a, k, w):
+  """Divide array into `k` partitions, each with total sum < `w`
+
+  Time complexity: O(N)
+  Space complexity: O(1)
+
+  Args:
+    a: List of ints
+    k: Number of partitions
+    w: Max sum in each partition
+  
+  Returns:
+    List of partition objects or None if partition not possible
+  """
+
+  ret = [Partition() for _ in range(k)]
+  curr = 0
+  for i in range(len(a)):
+    if ret[curr].total + a[i] <= w:
+      ret[curr].end = i
+      ret[curr].total += a[i]
+    elif curr >= k - 1:
+      return None
+    else:
+      # Start new partition
+      curr += 1
+      ret[curr].end = i
+      ret[curr].total = a[i]
+  
+  return ret
+
+
+def min_cargo_capacity(a, k):
+  """Find the minimum cargo capacity needed using binary search.
+
+  Time complexity: O(N * log(sum(a))) ###CHECK THIS
+  Space complexity: O(k)
+
+  Returns:
+    Min weight needed to ship cargo in k shipments.
+  """
+
+  L, U = max(a), sum(a)
+  best_ans = _partition_array_weight(a, k, U)
+  while L <= U:
+    M = (L + U) // 2
+    ans = _partition_array_weight(a, k, M)
+    if ans:
+      best_ans = ans
+      U = M - 1
+    else:
+      L = M + 1
+
+  return max([x.total for x in best_ans])
+
