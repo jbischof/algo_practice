@@ -50,6 +50,45 @@ def shortest_maze_traversal(start, end, maze):
   return None
 
 
+def maze_traversal_dfs(start, end, maze):
+  """Return path between maze start and end using DFS.
+  
+  If no path, return None.
+  """
+
+  path = []
+  if maze_traversal_dfs_helper(start, end, maze, path):
+    return path
+  return None
+
+
+def maze_traversal_dfs_helper(start, end, maze, path):
+
+  # Add self to path
+  path.append(start)
+
+  # Base case: at end point
+  if start == end:
+    return True
+
+  # Mark current point as visited
+  maze[start.x][start.y] = 0
+
+  for pos in [
+      Coordinate(start.x + 1, start.y),
+      Coordinate(start.x, start.y + 1),
+      Coordinate(start.x - 1, start.y),
+      Coordinate(start.x, start.y - 1)]:
+    if any(p < 0 or p >= len(maze) for p in pos) or maze[pos.x][pos.y] == 0:
+      continue
+    if maze_traversal_dfs_helper(pos, end, maze, path):
+      return True
+
+  # Remove self fromp path, hit dead end
+  path.pop()
+  return False
+
+
 def is_maze_path(start, end, maze):
   """Determine if there is a path between maze start and end."""
 
@@ -188,3 +227,4 @@ class SimpleGraph(object):
 
     # If queue empty without hitting dest, not connected
     return None
+

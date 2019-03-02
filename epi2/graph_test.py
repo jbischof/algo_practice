@@ -34,11 +34,24 @@ class TestGraph(unittest.TestCase):
     self.assertTrue(
         graph.is_maze_path(graph.Coordinate(9, 0), graph.Coordinate(0, 9),
             self.defaultMaze()))
-    maze = self.defaultMaze()
     # Remove access routes to exit
+    maze = self.defaultMaze()
     maze[1][6], maze[2][7] = 0, 0
     self.assertFalse(
         graph.is_maze_path(graph.Coordinate(9, 0), graph.Coordinate(0, 9),
+            maze))
+
+  def testMazeTraversalDFS(self):
+    path = graph.maze_traversal_dfs(
+            graph.Coordinate(9, 0), graph.Coordinate(0, 9), self.defaultMaze())
+    self.assertTrue(
+        graph.maze_traversal_dfs(graph.Coordinate(9, 0), graph.Coordinate(0, 9),
+            self.defaultMaze()))
+    # Remove access routes to exit
+    maze = self.defaultMaze()
+    maze[1][6], maze[2][7] = 0, 0
+    self.assertFalse(
+        graph.maze_traversal_dfs(graph.Coordinate(9, 0), graph.Coordinate(0, 9),
             maze))
 
   def testIsConnected(self):
