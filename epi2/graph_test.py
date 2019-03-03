@@ -104,3 +104,44 @@ class TestGraph(unittest.TestCase):
         g.topological_sort(),
         ['wash_dishes', 'set_table', 'buy_ingredients', 'grate_cheese',
          'boil_pasta', 'fry_sausage', 'make_sauce', 'assemble_lasagna', 'bake'])
+
+  def testMinSpanTree(self):
+    g = graph.Graph(adj_list={
+        'a': [
+            graph.Edge('a', 'b', 2),
+            graph.Edge('a', 'f', 2),
+            graph.Edge('a', 'd', 7)],
+        'b': [
+            graph.Edge('b', 'a', 2),
+            graph.Edge('b', 'f', 5),
+            graph.Edge('b', 'c', 1),
+            graph.Edge('b', 'e', 3)],
+        'c': [
+            graph.Edge('c', 'b', 1),
+            graph.Edge('c', 'e', 4),
+            graph.Edge('c', 'f', 4)],
+        'd': [
+            graph.Edge('d', 'a', 7),
+            graph.Edge('d', 'e', 1),
+            graph.Edge('d', 'g', 5)],
+        'e': [
+            graph.Edge('e', 'b', 3),
+            graph.Edge('e', 'c', 4),
+            graph.Edge('e', 'd', 1),
+            graph.Edge('e', 'g', 7)],
+        'f': [
+            graph.Edge('f', 'a', 2),
+            graph.Edge('f', 'b', 5),
+            graph.Edge('f', 'c', 4)],
+        'g': [
+            graph.Edge('g', 'd', 5),
+            graph.Edge('g', 'e', 7)]})
+    mst_edges = graph.min_span_tree(g)
+    edge_sets = [set([edge.source, edge.dest]) for edge in mst_edges]
+    self.assertItemsEqual(edge_sets, [
+        set(['a', 'f']),
+        set(['a', 'b']),
+        set(['b', 'c']),
+        set(['b', 'e']),
+        set(['e', 'd']),
+        set(['g', 'd'])])

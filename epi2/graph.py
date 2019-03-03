@@ -1,5 +1,6 @@
 """Graph problems."""
 import collections
+import heapq
 
 Coordinate = collections.namedtuple('Coordinate', ['x', 'y'])
 
@@ -228,3 +229,42 @@ class SimpleGraph(object):
     # If queue empty without hitting dest, not connected
     return None
 
+
+Edge = collections.namedtuple('Edge', ['source', 'dest', 'weight'])
+
+
+class Graph(object):
+  def __init__(self, adj_list=None):
+    self.adj_list = adj_list or dict()
+
+
+def min_span_tree(graph):
+  """Return set of edges that connect nodes in graph with minimum cost.
+
+  Uses Prim's algorithm.
+
+  Time complexity: O(|E| log |E|)
+  Space complexity: O(|E|)
+
+  Args:
+    graph: A Graph object
+
+  Returns:
+    A list of Edge objects
+  """
+
+  start = next(iter(graph.adj_list))
+  visited = set()
+  edges = set()
+  heap = [(0, Edge(None, start, 0))]
+  while heap:
+    # Add dest to network if not already visited
+    _, edge = heapq.heappop(heap)
+    if edge.dest in visited:
+      continue
+    visited.add(edge.dest)
+    if edge.source is not None:
+      edges.add(edge) 
+    for outedge in graph.adj_list[edge.dest]:
+      heapq.heappush(heap, (outedge.weight, outedge))
+  return edges
