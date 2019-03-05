@@ -51,3 +51,10 @@ class TestFinalPrep(unittest.TestCase):
         fp.Partition(10, 15)])
     self.assertFalse(fp._partition_array_weight(a, 4, 21))
     self.assertEqual(fp.min_cargo_capacity(a, 4), 22)
+
+  def testMultinomialRNG(self):
+    probs = [0.1, 0.5, 0.4]
+    self.assertEqual(fp.multinomial_rng(probs, 0.05), 0)
+    self.assertEqual(fp.multinomial_rng(probs, 0.5), 1)
+    self.assertEqual(fp.multinomial_rng(probs, 0.7), 2)
+    self.assertEqual(fp.multinomial_rng(probs, 0.99), 2)

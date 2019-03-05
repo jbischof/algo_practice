@@ -287,3 +287,32 @@ def min_cargo_capacity(a, k):
 
   return max([x.total for x in best_ans])
 
+
+def multinomial_rng(probs, unif):
+  """Produce sample from multinomial given unif draw.
+
+  Args:
+    probs: Vector of probabilities across k classes that sum to one.
+    unif: Uniform random number in [0, 1]
+
+  Returns:
+    Int from 0 to k-1.
+  """
+
+  cum = 0
+  cum_dist = []
+  for k in range(len(probs)):
+    cum += probs[k] 
+    cum_dist.append(cum)
+  
+  ret = 0
+  L, U = 0, len(cum_dist) - 1
+  while L <= U:
+    M = (L + U) // 2
+    if unif < cum_dist[M]:
+      ret = M
+      U = M - 1
+    else:
+      L = M + 1
+
+  return ret
