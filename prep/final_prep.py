@@ -316,3 +316,34 @@ def multinomial_rng(probs, unif):
       L = M + 1
 
   return ret
+
+
+class LastUniqueInt(object):
+  def __init__(self):
+    self.counter = collections.Counter() 
+    self.stack = []
+    self.last_unique = None
+
+  def update_last_unique(self, i):
+    """Update the last unique int seen so far.
+    
+    Args:
+      i: Next int seen.
+
+    Returns:
+      Last unique int seen.
+    """
+
+    if i in self.counter:
+      self.counter[i] += 1
+      if i == self.last_unique:
+        while self.counter[self.stack[-1]] > 1:
+          self.stack.pop()
+        self.last_unique = self.stack.pop()
+    else:
+      self.counter[i] += 1
+      self.stack.append(i)
+      self.last_unique = i
+
+    return self.last_unique
+

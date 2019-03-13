@@ -58,3 +58,12 @@ class TestFinalPrep(unittest.TestCase):
     self.assertEqual(fp.multinomial_rng(probs, 0.5), 1)
     self.assertEqual(fp.multinomial_rng(probs, 0.7), 2)
     self.assertEqual(fp.multinomial_rng(probs, 0.99), 2)
+
+  def testLastUniqueInt(self):
+    lui = fp.LastUniqueInt()
+    self.assertEqual(lui.update_last_unique(0), 0)
+    self.assertEqual(lui.update_last_unique(1), 1)
+    self.assertEqual(lui.update_last_unique(2), 2)
+    self.assertEqual(lui.update_last_unique(1), 2)
+    self.assertEqual(lui.update_last_unique(2), 0)
+    self.assertEqual(lui.update_last_unique(3), 3)
