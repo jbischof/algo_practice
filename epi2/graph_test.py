@@ -54,6 +54,14 @@ class TestGraph(unittest.TestCase):
         graph.maze_traversal_dfs(graph.Coordinate(9, 0), graph.Coordinate(0, 9),
             maze))
 
+  def testClosestXYPair(self):
+    a = [['x', 'a', 'a', 'a', 'y', 'a'],
+         ['a', 'x', 'a', 'a', 'a', 'a'],
+         ['x', 'a', 'a', 'y', 'a', 'a'],
+         ['a', 'a', 'a', 'a', 'a', 'a'],
+         ['a', 'a', 'y', 'a', 'a', 'x']] 
+    self.assertEqual(graph.closest_XY_pair(a), 3)
+
   def testIsConnected(self):
     g = self.simpleGraph()
     self.assertTrue(g.is_connected('b', 'a'))

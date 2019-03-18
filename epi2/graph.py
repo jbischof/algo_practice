@@ -114,6 +114,44 @@ def is_maze_path(start, end, maze):
   return False
 
 
+def closest_XY_pair(a):
+  """Return Manhattan distance of closest 'x' in 'y' in 2d array.
+
+  Args:
+    a: 2d array with lowercase chars
+
+  Returns:
+    Distance of closest 'x' and 'y'.
+  """
+
+  nrow, ncol = len(a), len(a[0])
+  queue = collections.deque([
+    Coordinate(i, j) for i in range(nrow) for j in range(ncol) 
+    if a[i][j] == 'x'])
+  dists = {x : 0 for x in queue}
+
+  while queue:
+    start = queue.popleft()
+    dist = dists[start]
+
+    for pos in [
+        Coordinate(start.x + 1, start.y),
+        Coordinate(start.x, start.y + 1),
+        Coordinate(start.x - 1, start.y),
+        Coordinate(start.x, start.y - 1)]:
+      if (pos.x < 0 or pos.y < 0 or pos.x >= nrow or pos.y >= ncol or 
+          pos in dists):
+        continue
+      dists[pos] = dist + 1
+      if a[pos.x][pos.y] == 'y':
+        # First 'y' found always the closest
+        return dists[pos]
+      queue.append(pos)
+
+  # No 'y' in a
+  return None
+
+
 class SimpleGraph(object):
   def __init__(self, adj_list=None):
     self.adj_list = adj_list or dict()
