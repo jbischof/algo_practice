@@ -86,3 +86,27 @@ class TestFinalPrep(unittest.TestCase):
     len_new_b = fp.remove_char_case_pairs(b)
     self.assertEqual(b[:len_new_b], 'ak')
     
+  def testFurthestLeafDist(self):
+    a = fp.NaryNode('a')
+    b = fp.NaryNode('b')
+    c = fp.NaryNode('c')
+    d = fp.NaryNode('d')
+    e = fp.NaryNode('e')
+    f = fp.NaryNode('f')
+    g = fp.NaryNode('g')
+    h = fp.NaryNode('h')
+    i = fp.NaryNode('i')
+    j = fp.NaryNode('j')
+    k = fp.NaryNode('k')
+    a.edges.extend([fp.NaryEdge(b, 6), 
+                    fp.NaryEdge(c, 5),
+                    fp.NaryEdge(d, 2)])
+    b.edges.append(fp.NaryEdge(e, 1)) 
+    c.edges.extend([fp.NaryEdge(f, 2), 
+                    fp.NaryEdge(g, 7),
+                    fp.NaryEdge(h, 3)])
+    d.edges.extend([fp.NaryEdge(i, 11), 
+                    fp.NaryEdge(j, 3)])
+    j.edges.append(fp.NaryEdge(k, 5)) 
+    self.assertEqual(fp.furthest_leaf_dist(a), 13)
+

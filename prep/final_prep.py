@@ -383,3 +383,37 @@ def remove_char_case_pairs(b):
       read_pos += 1
       
   return None if write_pos < 0 else write_pos + 1
+
+
+class NaryNode(object):
+  def __init__(self, name):
+    self.name = name
+    self.edges = []
+
+class NaryEdge(object):
+  def __init__(self, to=None, dist=0):
+    self.to = to 
+    self.dist = dist
+
+def furthest_leaf_dist(root):
+  """Find the distance to the furthest leaf in an n-ary tree.
+
+  Args:
+    root: Object of type NaryNode
+
+  Returns:
+    Distance to furthest node.
+  """
+
+  longest_dist = 0
+  queue = collections.deque([root])
+  dists = {root.name: 0}
+
+  while queue:
+    curr = queue.popleft()
+    for edge in curr.edges:
+      dists[edge.to.name] = dists[curr.name] + edge.dist
+      longest_dist = max(longest_dist, dists[edge.to.name])
+      queue.append(edge.to)
+
+  return longest_dist
