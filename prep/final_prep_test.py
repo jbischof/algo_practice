@@ -67,3 +67,22 @@ class TestFinalPrep(unittest.TestCase):
     self.assertEqual(lui.update_last_unique(1), 2)
     self.assertEqual(lui.update_last_unique(2), 0)
     self.assertEqual(lui.update_last_unique(3), 3)
+
+  def testRemoveCharCasePairs(self):
+    b = bytearray('abBbcCk')    
+    len_new_b = fp.remove_char_case_pairs(b)
+    self.assertEqual(b[:len_new_b], 'abk')
+    b = bytearray('abBbcCxKk')    
+    len_new_b = fp.remove_char_case_pairs(b)
+    self.assertEqual(b[:len_new_b], 'abx')
+    b = bytearray('BbcCKka')    
+    len_new_b = fp.remove_char_case_pairs(b)
+    self.assertEqual(b[:len_new_b], 'a')
+    b = bytearray('BbcCKk')    
+    len_new_b = fp.remove_char_case_pairs(b)
+    self.assertEqual(len_new_b, None)
+    # Repeated removal necessary
+    b = bytearray('abCcBk')    
+    len_new_b = fp.remove_char_case_pairs(b)
+    self.assertEqual(b[:len_new_b], 'ak')
+    

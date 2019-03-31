@@ -9,6 +9,7 @@ import sys
 sys.path.append('../epi/')
 import binary_tree as bt
 import bst
+import string
 
 
 def longest_twochar_substr(a):
@@ -347,3 +348,38 @@ class LastUniqueInt(object):
 
     return self.last_unique
 
+
+def is_ul_pair(first, second):
+  """Check if two strings are upper and lower case swaps from each other."""
+
+  return first == string.swapcase(second) 
+
+
+def remove_char_case_pairs(b):
+  """Remove all pairs of same char but different case from bytearray.
+
+  Args:
+    b: bytearray
+
+  Returns:
+    Lenth of new bytearray
+  """
+
+  read_pos, write_pos = 0, -1
+  last_pos = len(b) - 1
+  while read_pos <= last_pos:
+    if (read_pos < last_pos and 
+        is_ul_pair(chr(b[read_pos]), chr(b[read_pos + 1]))):
+      # Next two chars are match; skip ahead
+      read_pos += 2
+    elif write_pos >= 0 and is_ul_pair(chr(b[read_pos]), chr(b[write_pos])):
+      # Take back last write and don't write this one either
+      write_pos -= 1
+      read_pos += 1
+    else:
+      # Legal char
+      write_pos += 1
+      b[write_pos] = b[read_pos]
+      read_pos += 1
+      
+  return None if write_pos < 0 else write_pos + 1
