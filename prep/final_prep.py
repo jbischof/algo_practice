@@ -417,3 +417,41 @@ def furthest_leaf_dist(root):
       queue.append(edge.to)
 
   return longest_dist
+
+
+def forest_after_delete(root, to_delete):
+  """Return list of subtrees remaining after nodes in `to_delete` removed.
+
+  Args:
+    root: Object of class bt.Node
+    to_delete: Set of values to be deleted
+
+  Returns:
+    List of root nodes of resulting forest.
+  """
+
+  ret = []
+  if root.value not in to_delete:
+    ret.append(root)
+  fad_helper(root, to_delete, ret)
+  return ret
+
+
+def fad_helper(root, to_delete, ret):
+  if root is None:
+    return
+  if root.value in to_delete:
+    # Add children to ret if not also deleted
+    if root.left and root.left.value not in to_delete:
+      ret.append(root.left)
+    if root.right and root.right.value not in to_delete:
+      ret.append(root.right)
+  fad_helper(root.left, to_delete, ret)
+  fad_helper(root.right, to_delete, ret)
+  # Clean up child pointers
+  if root.left and root.left.value in to_delete:
+    root.left = None 
+  if root.right and root.right.value in to_delete:
+    root.right = None 
+  return
+

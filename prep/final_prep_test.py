@@ -1,6 +1,9 @@
 import unittest
 import final_prep as fp
 import numpy as np
+import sys
+sys.path.append('../epi/')
+import binary_tree as bt
 
 class TestFinalPrep(unittest.TestCase):
   def testLongestTwoCharSubstring(self):
@@ -110,3 +113,56 @@ class TestFinalPrep(unittest.TestCase):
     j.edges.append(fp.NaryEdge(k, 5)) 
     self.assertEqual(fp.furthest_leaf_dist(a), 13)
 
+
+  def FADTree(self):
+    a = bt.Node('a')
+    b = bt.Node('b')
+    c = bt.Node('c')
+    d = bt.Node('d')
+    e = bt.Node('e')
+    f = bt.Node('f')
+    g = bt.Node('g')
+    h = bt.Node('h')
+    i = bt.Node('i')
+    j = bt.Node('j')
+    f.left = b
+    f.right = g
+    b.left = a
+    b.right = d
+    d.left = c
+    d.right = e
+    g.right = i
+    i.left = h
+    h.right = j 
+    return f
+
+  def testForestAfterDeletion(self):
+    root = self.FADTree()
+    forest = fp.forest_after_delete(root, set('bi'))
+    self.assertItemsEqual(
+            [node.value for node in forest],
+            ['f', 'a', 'd', 'h'])
+    # Check pointer cleanup
+    self.assertEqual(root.left, None)
+    self.assertEqual(root.right.right, None)
+
+    # Delete non-consecutive nodes in same subtree
+    root = self.FADTree()
+    forest = fp.forest_after_delete(root, set('bid'))
+    self.assertItemsEqual(
+            [node.value for node in forest],
+            ['f', 'a', 'c', 'e', 'h'])
+
+    # Delete two consecutive nodes
+    root = self.FADTree()
+    forest = fp.forest_after_delete(root, set('bih'))
+    self.assertItemsEqual(
+            [node.value for node in forest],
+            ['f', 'a', 'd', 'j'])
+
+    # Delete the root
+    root = self.FADTree()
+    forest = fp.forest_after_delete(root, set('f'))
+    self.assertItemsEqual(
+            [node.value for node in forest],
+            ['b', 'g'])
