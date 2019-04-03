@@ -180,5 +180,34 @@ class TestFinalPrep(unittest.TestCase):
            fp.Interval(5, 6, set('zy')),
            fp.Interval(6, 8, set('y'))]
         )
+   # Events start and end at same time
+   self.assertEqual(
+       fp.distinct_overlapping_intervals([
+           fp.Interval(0, 4, set('x')),
+           fp.Interval(0, 8, set('w')),
+           fp.Interval(5, 8, set('y')),
+           fp.Interval(3, 6, set('z'))]),
+        [
+           fp.Interval(0, 3, set('xw')),
+           fp.Interval(3, 4, set('xzw')),
+           fp.Interval(4, 5, set('zw')),
+           fp.Interval(5, 6, set('zyw')),
+           fp.Interval(6, 8, set('yw'))]
+        )
+   # Non-overlapping events
+   self.assertEqual(
+       fp.distinct_overlapping_intervals([
+           fp.Interval(0, 4, set('x')),
+           fp.Interval(10, 12, set('w')),
+           fp.Interval(5, 8, set('y')),
+           fp.Interval(3, 6, set('z'))]),
+        [
+           fp.Interval(0, 3, set('x')),
+           fp.Interval(3, 4, set('xz')),
+           fp.Interval(4, 5, set('z')),
+           fp.Interval(5, 6, set('zy')),
+           fp.Interval(6, 8, set('y')),
+           fp.Interval(10, 12, set('w'))]
+        )
 
 

@@ -494,11 +494,12 @@ def distinct_overlapping_intervals(intervals):
   last_time = None
   for time, is_start, event in events:
     if is_start:
-      if active_events:
+      if active_events and time - last_time > 0:
         ret.append(Interval(last_time, time, copy.deepcopy(active_events)))
       active_events.add(event)
     else:  # Event is ending
-      ret.append(Interval(last_time, time, copy.deepcopy(active_events)))
+      if time - last_time > 0:
+        ret.append(Interval(last_time, time, copy.deepcopy(active_events)))
       active_events.discard(event)
     last_time = time
 
