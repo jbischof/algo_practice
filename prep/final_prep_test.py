@@ -166,3 +166,19 @@ class TestFinalPrep(unittest.TestCase):
     self.assertItemsEqual(
             [node.value for node in forest],
             ['b', 'g'])
+
+  def testDistinctOverlappingIntervals(self):
+   self.assertEqual(
+       fp.distinct_overlapping_intervals([
+           fp.Interval(0, 4, set('x')),
+           fp.Interval(5, 8, set('y')),
+           fp.Interval(3, 6, set('z'))]),
+        [
+           fp.Interval(0, 3, set('x')),
+           fp.Interval(3, 4, set('xz')),
+           fp.Interval(4, 5, set('z')),
+           fp.Interval(5, 6, set('zy')),
+           fp.Interval(6, 8, set('y'))]
+        )
+
+

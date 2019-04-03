@@ -10,6 +10,7 @@ sys.path.append('../epi/')
 import binary_tree as bt
 import bst
 import string
+import copy
 
 
 def longest_twochar_substr(a):
@@ -454,4 +455,52 @@ def fad_helper(root, to_delete, ret):
   if root.right and root.right.value in to_delete:
     root.right = None 
   return
+
+
+class Interval(object):
+  def __init__(self, start, end, events=None):
+    self.events = events or set()
+    self.start = start
+    self.end = end
+
+  def to_tuple(self):
+    return (self.start, self.end, self.events)
+
+  def __eq__(self, other):
+    return self.to_tuple() == other.to_tuple()
+
+  def __ne__(self, other):
+    return not self.__eq__(other)
+
+
+def distinct_overlapping_intervals(intervals):
+  """Computes set of intervals with each unique set of events active.
+
+  Args:
+    Iterable of Interval objects giving set of events. Each interval should
+        have only one active event.
+
+  Returns:
+    List of Interval objects with each unique set of events active.
+  """
+
+  # Divide intervals into start and end events
+  events = [(x.start, True, next(iter(x.events))) for x in intervals]
+  events.extend([(x.end, False, next(iter(x.events))) for x in intervals])
+  events.sort()
+  ret = []
+  active_events = set()
+  # Time of last event change
+  last_time = None
+  for time, is_start, event in events:
+    if is_start:
+      if active_events:
+        ret.append(Interval(last_time, time, copy.deepcopy(active_events)))
+      active_events.add(event)
+    else:  # Event is ending
+      ret.append(Interval(last_time, time, copy.deepcopy(active_events)))
+      active_events.discard(event)
+    last_time = time
+
+  return ret
 
