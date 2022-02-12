@@ -25,3 +25,15 @@ class TestArray(unittest.TestCase):
         a = [2, 5, 3, 2, 5, 6]
         array.del_dups(a)
         self.assertListEqual(a, [2, 5, 3, 6, 0, 0])
+
+    def test_len_longest_equal_subarray(self):
+        a = [3, 3, 4, 5, 5, 5, 6]
+        self.assertEqual(array.len_longest_equal_subarray(a), 3)
+        a = [1, 7, 3, 9, 4, 5]
+        self.assertEqual(array.len_longest_equal_subarray(a), 1)
+        
+    def test_subarray_sum(self):
+        a = [1, 5, 3, 7, 6]
+        self.assertFalse(array.subarray_sum(a, 11))
+        self.assertTrue(array.subarray_sum(a, 10))
+        self.assertTrue(array.subarray_sum(a, 3))

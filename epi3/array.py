@@ -1,4 +1,5 @@
 """Array problems."""
+import random
 
 def sort_even_odd(a):
     """Sort array such that even entries proceed odd ones.
@@ -132,4 +133,78 @@ def del_dups(a):
     for i in range(pos, len(a)):
         # Zero out remaining entries
         a[i] = 0
+
+
+def len_longest_equal_subarray(a):
+    """Finds the length of the longest subarray where all entries are equal.
+
+    Idea: Record the previous value and a counter for how long since that 
+    value has been the same. Once the value changes, compare that counter to
+    the longest subarray seen so far.
+
+    Time: O(N) since only traverse array once, Space: O(1)
+
+    a = [3, 3, 4, 5, 5, 5, 6]
+    3: 0, 1, 3
+    3: 0, 2, 3
+    4: 2, 1, 4
+    5: 2, 1, 5
+    5: 2, 2, 5
+    5: 2, 3, 5
+    6: 3, 1, 6
+    Return: 3
+    """
+
+    len_longest = 0
+    len_so_far = 1
+    last_seen = a[0]
+    
+    for x in a[1:]:
+        if x == last_seen:
+            len_so_far += 1
+        else:
+            if len_so_far > len_longest:
+                len_longest = len_so_far
+            len_so_far = 1
+            last_seen = x
+
+    return len_longest
+
+
+def rand_permutation(a):
+    """Compute a random permutation of array.
+
+    Strategy: Iterate through array and fill each position with an item
+    remaining from the rest of the list.
+
+    Time: O(N), Space: O(1)
+
+    """
+
+    for i in range(len(a)):
+        j = random.randrange(i, len(a))
+        a[i], a[j] = a[j], a[i]
+
+
+def subarray_sum(a, k):
+    """Check if any subarray sums to integer k.
+
+    Args:
+        a: array on ints
+    Returns:
+        bool if subarray exists
+
+    Idea: Iterate through the array and record all cumulative sums sum(a[:k])
+    in a hashmap. While iterating check if (k - sum) is the the table.
+    """
+
+    sums = set()
+    cum_sum = 0
+
+    for x in a:
+        sums.add(cum_sum)
+        cum_sum += x
+        if cum_sum - k in sums:
+            return True
+    return False
 
