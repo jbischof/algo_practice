@@ -1,5 +1,6 @@
 import unittest
 import stacks
+from stacks import Building
 
 class TestStacks(unittest.TestCase):
     def test_stack_with_max(self):
@@ -12,6 +13,36 @@ class TestStacks(unittest.TestCase):
         self.assertEqual(s.pop(), 25)
         self.assertEqual(s.max(), 11)
         self.assertEqual(s.pop(), 5)
+
+    def test_sunset_view(self):
+
+        buildings = [
+            Building('a', 6),
+            Building('b', 3),
+            Building('c', 9),
+            Building('d', 2),
+            Building('e', 6),
+            Building('f', 0),
+            Building('g', 8),
+            Building('h', 2),
+            Building('i', 1)
+        ]
+        self.assertListEqual([x.name for x in stacks.sunset_view(buildings)],
+                             ['i', 'h', 'g', 'c'])
+        buildings = [
+            Building('a', 6),
+            Building('b', 3),
+            Building('c', 9),
+            Building('d', 2),
+            Building('e', 6),
+            Building('f', 0),
+            Building('g', 8),
+            Building('h', 2),
+            Building('i', 1)
+        ]
+        self.assertListEqual(
+                [x.name for x in stacks.sunset_view_stream(buildings)],
+                ['c', 'g', 'h', 'i'])
 
 
 class TestPostingList(unittest.TestCase):
@@ -52,6 +83,6 @@ class TestPostingList(unittest.TestCase):
                 self.n5.order],
             [0, 2, 1, 3, 4]
         )
-        
+
 
 
