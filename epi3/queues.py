@@ -37,9 +37,8 @@ class QueueWithMax(object):
 
     def push(self, x):
         self.queue.append(x)
-        while self.max_queue:
-            if self.max_queue[-1] < x:
-                self.max_queue.pop()
+        while self.max_queue and self.max_queue[-1] < x:
+            self.max_queue.pop()
         self.max_queue.append(x)
 
     def extend(self, x):
