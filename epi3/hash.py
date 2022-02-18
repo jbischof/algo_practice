@@ -73,7 +73,7 @@ def smallest_subarray_with_words(text, words):
     Idea: Use two pointers to traverse array. Advance the upper pointer until
     all the words are covered, then advance the lower pointer until hit another 
     one of the words. Record the smallest subarray seen so far while traversing.
-    Time: O(NK), Space: O(K)
+    Time: O(N), Space: O(K)
     => This one seems hard to beat.
 
     Example text:
@@ -101,19 +101,14 @@ def smallest_subarray_with_words(text, words):
     lower, upper = 0, 0
     curr_words = Counter()
     best_lower, best_upper= -float("inf"), 0
-    while lower <= upper and upper < len(text):
-        if len(words - set(curr_words)) > 0:
-            # Still missing some words
-            found_word = False
-            while upper < len(text) - 1:
-                upper += 1
-                if text[upper] in words:
-                    curr_words[text[upper]] += 1
-                    found_word = True
-                    break
-            # If didn't find another word, give up
-            if not found_word:
-                break 
+    remaining_words = len(words)
+    while lower <= upper and upper < len(text) - 1:
+        if remaining_words > 0:
+            upper += 1
+            if text[upper] in words:
+                curr_words[text[upper]] += 1
+                if curr_words[text[upper]] == 1:
+                    remaining_words -= 1
         else:
             # Valid subarray
             # Advance lower pointer until hit a word
@@ -125,7 +120,7 @@ def smallest_subarray_with_words(text, words):
             # Get rid of lowest word
             curr_words[text[lower]] -= 1
             if curr_words[text[lower]] == 0:
-                del curr_words[text[lower]]
+                remaining_words += 1
             lower += 1
 
     return best_lower, best_upper
