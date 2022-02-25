@@ -42,3 +42,16 @@ class TestGraph(unittest.TestCase):
         graph.flood_fill(image, (2, 1))
         for row in range(len(image)):
             self.assertListEqual(image[row], flood_fill_image[row])
+
+    def test_has_cycle(self):
+        g = {
+            'A': ['B'],
+            'B': ['C', 'E'],
+            'C': ['F'],
+            'D': ['A'],
+            'E': ['D'],
+            'F': [],
+        }
+        self.assertTrue(graph.has_cycle(g))
+        g['D'] = []
+        self.assertFalse(graph.has_cycle(g))

@@ -154,3 +154,57 @@ def flood_fill(image, seed):
         queue.append((node[0], node[1] - 1))
         # Flip this node color
         image[node[0]][node[1]] = 1 - color
+
+
+def has_cycle(graph):
+    """
+    Detect if directed graph has cycles.
+
+    Idea: Need visited fields (or map) for graphs precisely because cycles are
+    possible. If there is more than one way to get to a node we can go around
+    in circles forever. However, with DAGs/trees this isn't possible so no
+    visited map is needed.
+
+    Therefore, do normal DFS on graph with visited map. If try to add a visited
+    node back to the stack, return False. If stack empties without this event,
+    return True.
+
+    Time: O(|V| + |E|), Space: O(|V|)
+    graph = {
+        'A': ['B'],
+        'B': ['C', 'E'],
+        'C': ['F'],
+        'D': ['A'],
+        'E': ['D'],
+        'F': [],
+    }
+                 A
+              ^     \
+             /       v 
+             D       B -> C
+             ^      /      \
+              \    v        v
+                E           F
+    Start: A
+    curr, stack, visited
+    -, [A], []
+    A, [B], [A]
+    B, [C, E], [A, B]  
+    E, [C, D], [A, B, E]
+    D, [C, A] -> wait A in visited -> Return True
+    If no connection between D and A:
+    D, [C], [A, B, E, D]
+    C, [F], [A, B, E, D, C]
+    F, [], [A, B, E, D, C, F] -> Return False
+    """
+
+    stack = [next(iter(graph))]
+    visited = set()
+    while stack:
+        node = stack.pop()
+        for edge in graph[node]:
+            if edge in visited:
+                return True
+            stack.append(edge)
+            visited.add(edge)
+    return False
