@@ -53,6 +53,13 @@ class Annotation(object):
         self.end = end
 
 
+class Event(object):
+    def __init__(self, name, time, isEnd):
+        self.name = name
+        self.time = time
+        self.isEnd = isEnd
+
+
 def interval_annotation(a):
     """
     Input: a text being annotated, and list of intervals with annotation.
@@ -146,9 +153,9 @@ def interval_annotation(a):
     # Make event stream
     events = []
     for annot in a:
-        events.append((annot.start, annot.name, False))
-        events.append((annot.end, annot.name, True))
-    events.sort()
+        events.append(Event(annot.name, annot.start, False))
+        events.append(Event(annot.name, annot.end, True))
+    events.sort(key=lambda x: x.time)
 
     res = []
     curr_set = set()
@@ -161,20 +168,87 @@ def interval_annotation(a):
                     [
                         ''.join(sorted([item for item in curr_set])),
                         curr_start, 
-                        event[0]
+                        event.time
                     ]
             )
-        if event[2]:
+        if event.isEnd:
             # Event ending
-            curr_set.remove(event[1])
+            curr_set.remove(event.name)
         else:
             # Event starting
-            curr_set.add(event[1]) 
+            curr_set.add(event.name) 
         # Update current start position
         if len(curr_set) < 1:
             curr_start = None
         else:
-            curr_start = event[0]
+            curr_start = event.time
 
     return res
+
+
+def max_annot_overlap(a):
+    """
+    Determine max overlap of annotations on a string.
+
+    Idea: split annotations into event stream and sort. Maintaining a counter,
+    augment every time an event starts and and decrement every time it ends.
+    Record max overlap seen so far.
+    Time: O(NlogN), Space: O(N)
+
+    Example:
+    {
+      [4, 6) -> W,
+      [0, 4) -> X,
+      [3, 6) -> Z,
+      [5, 8) -> Y,
+    }
+     012345678
+    X---
+    W    --  
+    Y     ---
+    Z   ---
+    Ans: 3
+
+    Events:
+    [
+        (0, s, X),
+        (3, s, Z), 
+        (4, e, X), 
+        (4, s, W), 
+        (5, s, Y), 
+        (6, e, Z), 
+        (6, e, W), 
+        (8, e, Y), 
+    ]
+    event, count, max_count
+    -, 0, 0
+    (0, s, X), 1, 1 
+    (3, s, Z), 2, 2 
+    (4, e, X), 1, 2 
+    (4, s, W), 2, 2
+    (5, s, Y), 3, 3
+    (6, e, Z), 2, 3 
+    (6, e, W), 1, 3
+    (8, e, Y), 0, 3 
+    return 3
+
+    """
+
+    # Split annotations into event stream
+    events = []
+    for annot in a:
+        events.append(Event(annot.name, annot.start, False))
+        events.append(Event(annot.name, annot.end, True))
+    # Sort ensuring that ends come before starts with same time
+    events.sort(key=lambda e: (e.time, e.isEnd))
+     
+    count, max_count = 0, 0
+    for event in events:
+        if event.isEnd:
+            count -= 1
+        else:
+            count += 1
+            max_count = max(count, max_count)
+     
+    return max_count
 

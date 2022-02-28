@@ -31,3 +31,11 @@ class TestPrep2(unittest.TestCase):
                     ['Y', 6, 8]
                 ]
         )
+    def test_max_annot_overlap(self):
+        a = [
+                Annotation('X', 0, 4),
+                Annotation('W', 4, 6),
+                Annotation('Y', 5, 8),
+                Annotation('Z', 3, 6)
+            ]
+        self.assertEqual(prep2.max_annot_overlap(a), 3)
