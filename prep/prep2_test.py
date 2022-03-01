@@ -39,3 +39,34 @@ class TestPrep2(unittest.TestCase):
                 Annotation('Z', 3, 6)
             ]
         self.assertEqual(prep2.max_annot_overlap(a), 3)
+
+    def test_tree_eraser(self):
+        f = Node('F')
+        b = Node('B')
+        g = Node('G')
+        a = Node('A')
+        d = Node('D')
+        i = Node('I')
+        c = Node('C')
+        e = Node('E')
+        h = Node('H')
+        f.left = b
+        f.right = g
+        b.parent = f
+        b.left = a
+        b.right = d
+        b.isDelete = True
+        a.parent = b
+        d.parent = b
+        d.left = c
+        d.right = e
+        c.parent = d
+        e.parent = d
+        g.parent = f
+        g.right = i
+        i.parent = g
+        i.left = h
+        i.isDelete = True
+        h.parent = i
+        self.assertCountEqual(prep2.tree_eraser(f), set([f, a, d, h]))
+

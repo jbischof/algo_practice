@@ -252,3 +252,98 @@ def max_annot_overlap(a):
      
     return max_count
 
+
+class Node(object):
+    def __init__(self, value):
+        self.value = value
+        self.left = None
+        self.right = None
+        self.parent = None
+        self.isDelete = False
+
+
+def tree_eraser(root):
+    """
+    Given a binary tree, where each node has a "left" and "right" pointers, and 
+    a predicate shouldBeErased(Node n), output the forest (collection of trees) 
+    created by erasing the nodes indicated by shouldBeErased().
+
+    Args:
+        root: A node
+    Retruns:
+        A set of forest roots
+
+    Example:
+         F
+        / \
+       /   \
+     [B]    G
+     / \     \
+    A   D    [I]
+       / \   /
+      C   E H
+    
+    
+    In this example shouldBeErased() returns true for nodes B & I and false for 
+    the other nodes, the resulting forest is : [ A, D, F, H ]
+    
+    A  F      D    H
+        \    / \
+         G  C   E
+
+    Thoughts: need to clean up pointers and handle recursion given the deletion.
+    Might also need to pass a reference to the ret object with the traversal so
+    can append the new roots as needed. 
+
+    Should handle deletion from the parent frame or the child frame? Unless
+    parent pointers we are going to need to handle this from the parent frame.
+
+    If have parent pointers, this might actually be easier from child frame. 
+    Otherwise might have to go running after an arbitrary number of deleted
+    children.
+
+    Idea: Inorder traversal should work well here. When find a child node marked
+    for removal can clean up pointers and start again. 
+
+    Test:
+         F
+        / \
+       /   \
+     [B]    G
+     / \     \
+    A   D    [I]
+       / \   /
+      C   E H
+    """
+
+    ret = set()
+    tree_eraser_helper(root, ret)
+    return ret
+    
+
+def tree_eraser_helper(root, ret):
+    # Base case: empty Node
+    if root is None:
+        return
+     
+    if root.parent is None and not root.isDelete:
+        # Add any orphan nodes to output
+        ret.add(root)
+    if root.isDelete:
+        # Clean up parent pointer
+        if root.parent and root.parent.left == root:
+            root.parent.left = None
+        elif root.parent:
+            root.parent.right = None
+        # Clean up child parent pointers
+        if root.left:
+            root.left.parent = None
+        if root.right:
+            root.right.parent = None
+
+    # Recurse to children
+    tree_eraser_helper(root.left, ret)
+    tree_eraser_helper(root.right, ret)
+    return
+
+
