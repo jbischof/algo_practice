@@ -153,3 +153,63 @@ def kth_smallest(k, a):
     # This should never happen
     return None
 
+
+def search_2d_array(a, k):
+    """
+    Returns true of the item k is in the 2D sorted array `a`.
+    A 2D sorted array has both the rows and columns in increasing order.
+
+    Brute force: iterate through entire array.
+    Time: O(NM), Space: O(1)
+
+    Idea: Search each row, stopping when hit the end or find a larger number.
+    Then proceed to the next row (same column) and decide direction as needed.
+    Unclear about the time complexity---maybe a lot of backtracking necessary?
+
+    Idea2: Perform binary search on each row. Time(NlogM), Space: O(1)
+    Even better: search the big dimension and iterate over the small.
+
+    Idea3: Maintain a min_row, max_col of the current search area. Each
+    iteration compare the top right element to the search value. If the value
+    if less, increment min_row. If the value is greater, decrement max_col.
+    Stop when matrix is 1x1.
+    Top: O(N + M) since reduce the search area by one row or column each iter.
+    Space: O(1)
+
+    a = [#0   1   2   3    4
+        [-1,  2,  4,  5,   6],   # 0 
+        [ 1,  5,  5,  9,   21],  # 1
+        [ 3,  6,  6,  9,   22],  # 2
+        [ 3,  6,  8,  10,  24],  # 3
+        [ 6,  8,  9,  12,  25],  # 4 
+        [ 8,  10, 12, 13,  40],  # 5
+    ]
+    7 -> False
+    min_row, max_col, num
+    0, 4, 6 < 7
+    1, 4, 21 > 7
+    1, 3, 9 > 7
+    1, 2, 5 < 7
+    2, 2, 6 < 7
+    3, 2, 8 > 7
+    3, 1  6 < 7
+    4, 1, 8 > 7
+    4, 0, 6 < 7
+    5, 0, 8 > 7
+    5, -1 break
+    Return False
+    8 -> True
+    """
+
+    min_row, max_col = 0, len(a[0]) - 1
+    while min_row < len(a) and max_col > -1:
+        # Check the top left corner
+        if a[min_row][max_col] == k:
+            return True
+        if a[min_row][max_col] < k:
+            max_col -= 1
+        else:
+            min_row += 1
+
+        return False
+
