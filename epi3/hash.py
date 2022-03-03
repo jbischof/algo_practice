@@ -125,3 +125,60 @@ def smallest_subarray_with_words(text, words):
 
     return best_lower, best_upper
 
+
+def longest_unique_subarray(a):
+    """
+    Finds the length of the longest subarray in a that contains unique items.
+
+    Brute force: enumerate all the subarrays and verify whether each one has
+    unique entries using a hashmap. Time: O(N^3), Space: O(N)
+
+    Idea: Move a start and end pointer through the array focusing on windows
+    with unique entries. If everything is unique, advance the right pointer.
+    If there is a duplicate, advance the left pointer until again all unique.
+    Time: O(N) since the pointers advance N times each and each item is added
+    and removed from the hashmap N times.
+    Space: O(N) for the hashmap
+
+    Book tip: store the most recent position of each item in the set so can
+    advance the left pointer directly rather than position by position. Doesn't
+    affect worse case but would help best and average.
+
+              0  1  2  3  4  5  6  7  8  9
+    Example: [f, s, f, e, t, w, e, n, w, e]
+    s, e, ml, set
+    0  0  1   [f]
+    0, 1, 2,  [f, s]
+    1, 1, 2,  [s]
+    1, 2, 2,  [s, f]
+    1, 3, 3,  [s, f, e]
+    1, 4, 4,  [s, f, e, t]
+    1, 5, 5,  [s, f, e, t, w]
+    2, 5, 5,  [f, e, t, w]
+    3, 5, 5,  [e, t, w]
+    4, 5, 5,  [t, w]
+    4, 6, 5,  [t, w, e]
+    4, 7, 5,  [t, w, e, n]
+    5, 7, 5,  [w, e, n]
+    6, 7, 5,  [e, n]
+    6, 8, 5,  [e, n, w]
+    7, 8, 5,  [n, w]
+    7, 9, 5,  [n, w, e]
+    return 5
+    """
+
+    items = set([a[0]])
+    start, end = 0, 0
+    max_len = 1
+    while end < len(a) - 1 and start <= end:
+        # Check if next item can be added to set
+        if a[end + 1] in items:
+            # Already have that item! Remove the earliest and try again
+            items.remove(a[start])
+            start += 1
+        else:
+            # Unique item to add!
+            end += 1
+            items.add(a[end])
+            max_len = max(len(items), max_len)
+    return max_len

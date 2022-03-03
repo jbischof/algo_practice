@@ -18,3 +18,7 @@ class TestHash(unittest.TestCase):
                 list(hashlib.smallest_subarray_with_words(text, words)),
                 [2, 4]
         )
+
+    def test_longest_unique_subarray(self):
+        a = ['f', 's', 'f', 'e', 't', 'w', 'e', 'n', 'w', 'e']
+        self.assertEqual(hashlib.longest_unique_subarray(a), 5)
