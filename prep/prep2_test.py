@@ -1,6 +1,6 @@
 import unittest
 import prep2
-from prep2 import Node, Annotation
+from prep2 import Node, Annotation, AlphaBlock
 
 class TestPrep2(unittest.TestCase):
     def test_eval_tree_expr(self):
@@ -69,4 +69,19 @@ class TestPrep2(unittest.TestCase):
         i.isDelete = True
         h.parent = i
         self.assertCountEqual(prep2.tree_eraser(f), set([f, a, d, h]))
+
+    def test_spell_message(self):
+        blocks = [
+                AlphaBlock('UOIDLY'),
+                AlphaBlock('POCEIU'),
+                AlphaBlock('QWETJJ'),
+                AlphaBlock('AFRYGL'),
+                AlphaBlock('SLAQCE'),
+                AlphaBlock('DFSMGH'),
+        ]
+        self.assertTrue(prep2.spell_message('GOOGLE', blocks))
+        blocks[4], blocks[5] = blocks[5], blocks[4]
+        self.assertTrue(prep2.spell_message('GOOGLE', blocks))
+        blocks[5] = AlphaBlock('ZZZZZZ')
+        self.assertFalse(prep2.spell_message('GOOGLE', blocks))
 

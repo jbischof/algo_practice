@@ -2,6 +2,7 @@
 Final prep for showtime
 """
 import heapq
+import collections
 
 class Node(object):
     def __init__(self, value=None):
@@ -347,3 +348,85 @@ def tree_eraser_helper(root, ret):
     return
 
 
+class AlphaBlock(object):
+    """
+    A representation of a six-sided block with one char per face.
+
+    The letters on the faces are not necessarily unique.
+    """
+    
+    def __init__(self, chars):
+        self.chars = chars
+        self.char_count = collections.Counter(chars)
+        self.upface = chars[0]
+
+
+def spell_message(msg, blocks):
+    """
+    Reorder array of alpha blocks to spell the requested message.
+
+    Brute force: Generate all permutations of the blocks and see if any can
+    produce the desired message. Can prune any unpromising perms, but doesn't
+    affect the worst case.
+    Time: O(N * N!), Space: O(N)
+
+    Idea: If char only present in one block, know where to put it. Otherwise
+    ambiguity if a block has two chars of interest or if a char of interest is
+    in multiple positions in the message.
+
+    Greedy approach: For each position, look for the required letter among the
+    blocks and fill it. If a letter is not available in the remaining blocks,
+    search the previous blocks and swap it out. If have swapped out all previous
+    positions and cannot move forward, return False.
+    Actually this doesn't work because may need to swap the same position many
+    times if some chars are easy to get but others are rare. Seems like we need
+    the raw recursion.
+
+    blocks = [
+            AlphaBlock('UOIDLY'), # 0
+            AlphaBlock('POCEIU'), # 1
+            AlphaBlock('QWETJJ'), # 2
+            AlphaBlock('AFRYGL'), # 3
+            AlphaBlock('SLAQCE'), # 4
+            AlphaBlock('DFSMGH'), # 5
+    ]
+    pos, i, blocks
+             0  1  2  3  4  5
+    0,   0, [0, 1, 2, 3, 4, 5]
+    0,   1, [1, 0, 2, 3, 4, 5]
+    0,   2, [2, 0, 1, 3, 4, 5]
+    0,   3, [3, 0, 1, 2, 4, 5]
+    1,   1, [3, 0, 1, 2, 4, 5]
+    1,   2, [3, 1, 0, 2, 4, 5]
+    2,   2, [3, 1, 0, 2, 4, 5]
+    3,   3, [3, 1, 0, 2, 4, 5]
+    4,   4, [3, 1, 0, 2, 4, 5]
+    5,   5, [3, 1, 0, 2, 4, 5]
+    """ 
+
+    return spell_message_helper(0, msg, blocks)
+
+
+def spell_message_helper(pos, msg, blocks):
+    """
+    Checks if possible to construct next char of message from next block.
+    """
+
+    # Base case: at the end. With backtracking this means we are successful!
+    if pos == len(msg):
+        return True
+
+    # Try to construct char
+    res = False
+    for i in range(pos, len(msg)):
+        blocks[pos], blocks[i] = blocks[i], blocks[pos]
+        # Do not proceed if cannot construct msg with this block
+        if msg[pos] in blocks[pos].char_count:
+            blocks[pos].upface = msg[pos]
+            res = spell_message_helper(pos + 1, msg, blocks)
+        if res:
+            break
+        # Don't need this because if you fail all positions >= i are not
+        # in an interesting order yet.
+        # blocks[pos], blocks[i] = blocks[i], blocks[pos]
+    return res
