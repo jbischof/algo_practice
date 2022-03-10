@@ -85,3 +85,5 @@ class TestPrep2(unittest.TestCase):
         blocks[5] = AlphaBlock('ZZZZZZ')
         self.assertFalse(prep2.spell_message('GOOGLE', blocks))
 
+    def test_remove_Xx_repeats(self):
+        self.assertEqual(prep2.remove_Xx_repeats('abcCkDdppGGa'), 'abkppGGa') 

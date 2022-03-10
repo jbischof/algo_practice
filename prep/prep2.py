@@ -430,3 +430,53 @@ def spell_message_helper(pos, msg, blocks):
         # in an interesting order yet.
         # blocks[pos], blocks[i] = blocks[i], blocks[pos]
     return res
+
+
+def remove_Xx_repeats(s):
+    """
+    Given a string that contains alphabetic characters, remove pairs of xX or Xx
+    where the two chars in the pair are the same letter in different case. So 
+    xX is removed, Xx is removed, but xx and XX are not. 
+
+    Sample input: abcCkDdppGGa 
+    Sample output: abkppGGa 
+
+    Idea: Compare current char with next char to see if it is a "xX" type. If
+    it is, do not write to new string.
+    Time: O(N), Space: O(N)
+
+              11
+    012345678901
+    abcCkDdppGGa
+
+    i, ret
+    0, 'a'
+    1, 'ab'
+    2, 'ab'
+    4, 'abk'
+    5, 'abk'
+    7, 'abkp'
+    8, 'abkpp'
+    9, 'abkppG'
+    10,'abkppGGa'
+    """
+
+    ret = []
+    i = 0
+    while i < len(s) - 1:
+        if (
+                (
+                    (s[i].isupper() and s[i + 1].islower()) or
+                    (s[i].islower() and s[i + 1].isupper())
+                ) and
+                s[i].lower() == s[i + 1].lower()
+           ):
+            i += 2
+            continue
+        ret.append(s[i])
+        if i == len(s) - 2:
+            # Handle last char if not paired with previous
+            ret.append(s[i + 1])
+        i += 1
+
+    return ''.join(ret)

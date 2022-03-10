@@ -45,7 +45,9 @@ def num_score_combs(n, scores):
         [1, 0, 1, 1, 1, 1, 2], # 2, 3
         [1, 0, 1, 1, 2, 1, 3], # 2, 3, 4
     ]
-
+    Time: O(N * M), where N is the final score and M is the number of unique
+    scores
+    Space: O(N * M)
     """
 
     scores.sort()
