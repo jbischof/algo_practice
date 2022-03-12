@@ -208,3 +208,42 @@ def subarray_sum(a, k):
             return True
     return False
 
+
+def best_trade(a):
+    """
+    Find the best times to buy and sell a stock
+    Args:
+        a: array of prices time series
+    Returns:
+        A tuple of buy and sell times
+        
+    Idea: Iterate through the array and keep a running min since that is always
+    the best time to buy. Then compare the current price to the running min and
+    see if current profit better than the highest seen so far.
+    Time: O(N), Space: O(1)
+
+         0  1  2  3  4  5  6
+    a = [5, 3, 7, 8, 2, 1, 4]
+    idx, bt, bt_idx,  run_min, argmin
+    0,   -2, (0, 1),  5,       0      
+    1,   -2, (0, 1),  3,       1      
+    2,   4,  (1, 2),  3,       1      
+    3,   5,  (1, 3),  3,       1      
+    4,   5,  (1, 3),  2,       4      
+    5,   5,  (1, 3),  1,       5
+    6,   5,  (1, 3),  1,       5
+    return (1, 3)
+    """
+
+    # Initialize with first price
+    run_min = a[0]
+    argmin = 0
+    best_trade_idx = (0, 1)
+    best_trade = a[1] - a[0]
+    for i in range(1, len(a)):
+        price = a[i]
+        if price - run_min > best_trade:
+            best_trade_idx, best_trade = (argmin, i), price - run_min
+        if price < run_min:
+            argmin, run_min = i, price
+    return best_trade_idx

@@ -1,6 +1,6 @@
 import unittest
 import prep2
-from prep2 import Node, Annotation, AlphaBlock
+from prep2 import Node, NaryNode, Annotation, AlphaBlock
 
 class TestPrep2(unittest.TestCase):
     def test_eval_tree_expr(self):
@@ -87,3 +87,23 @@ class TestPrep2(unittest.TestCase):
 
     def test_remove_Xx_repeats(self):
         self.assertEqual(prep2.remove_Xx_repeats('abcCkDdppGGa'), 'abkppGGa') 
+
+    def test_highest_path_sum(self):
+        #                1
+        #      /         |         \
+        #      2         3          4
+        #  /   |      /  |  \
+        # 5    6      7  8  9 
+        one = NaryNode(1)
+        two = NaryNode(2)
+        three = NaryNode(3)
+        four = NaryNode(4)
+        five = NaryNode(5)
+        six = NaryNode(6)
+        seven = NaryNode(7)
+        eight = NaryNode(8)
+        nine = NaryNode(9)
+        one.edges = [two, three, four]
+        two.edges = [five, six]
+        three.edges = [seven, eight, nine]
+        self.assertEqual(prep2.highest_path_sum(one), 13)

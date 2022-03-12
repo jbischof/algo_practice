@@ -7,6 +7,15 @@ import collections
 class Node(object):
     def __init__(self, value=None):
         self.value = value
+        self.left = None
+        self.right = None
+
+
+class NaryNode(object):
+    def __init__(self, value=None):
+        self.value = value
+        self.edges = []
+
 
 def eval_tree_expr(root):
     """
@@ -480,3 +489,48 @@ def remove_Xx_repeats(s):
         i += 1
 
     return ''.join(ret)
+
+
+def highest_path_sum(root):
+    """
+    Compute the largest sum on an n-ary tree from root to leaf.
+
+    Easiest recursion will be to pass sums up the tree. Recursion for root
+    of binary subtree will be 
+    root.sum = max(left.sum, right.sum) + root.value
+
+    Base case is leaf node, which returns root.value only.
+
+    Time: O(N)
+    Space: O(H)
+
+                        1
+              /         |         \
+              2         3          4
+          /   |      /  |  \
+         5    6      7  8  9 
+    node, max_sum
+    5, 5
+    6, 6
+    2, 8
+    7, 7
+    8, 8
+    9, 9
+    3, 12
+    4, 4
+    1, 13
+    return 13
+    """
+
+    # Base case: childless node
+    if not root.edges:
+        return root.value
+
+    # Iterate through children to get max
+    max_sum = 0
+    for edge in root.edges:
+        max_sum = max(highest_path_sum(edge), max_sum)
+
+    return max_sum + root.value
+
+
