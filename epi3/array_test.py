@@ -39,5 +39,12 @@ class TestArray(unittest.TestCase):
         self.assertTrue(array.subarray_sum(a, 3))
 
     def test_best_trade(self):
+        #    0  1  2  3  4  5  6
         a = [5, 3, 7, 8, 2, 1, 4]
         self.assertEqual(array.best_trade(a), (1, 3))
+        self.assertEqual(array.best_two_trades(a), [(1, 3), (5, 6)])
+        # Don't want to trade more than once
+        #    0  1  2  3  4  5  6
+        a = [1, 8, 7, 6, 5, 4, 3]
+        self.assertEqual(array.best_trade(a), (0, 1))
+        self.assertEqual(array.best_two_trades(a), [(0, 1)])

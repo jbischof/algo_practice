@@ -238,8 +238,7 @@ def best_trade(a):
     # Initialize with first price
     run_min = a[0]
     argmin = 0
-    best_trade_idx = (0, 1)
-    best_trade = a[1] - a[0]
+    best_trade = float('-inf')
     for i in range(1, len(a)):
         price = a[i]
         if price - run_min > best_trade:
@@ -247,3 +246,91 @@ def best_trade(a):
         if price < run_min:
             argmin, run_min = i, price
     return best_trade_idx
+
+
+class Trade(object):
+    def __init__(self, start, end, profit):
+        self.start = start
+        self.end = end
+        self.profit = profit
+
+
+def best_two_trades(a):
+    """
+    Find the best times to buy and sell a stock twice
+    Args:
+        a: array of prices time series
+    Returns:
+        A list of two tuples of buy and sell times
+
+    Brute force-ish: iterate over all the possible partitions of the array and
+    find the best trades in each. Return the answers with the most profitable
+    trades.
+    Time: O(N^2), Space: O(N)
+
+    Idea: To do this in one pass, need to locate the first and second biggest
+    non-overlapping increases in price across the array. The non-overlapping
+    constraint is what makes this pretty tricky. Any recursive solution will not
+    be better than the N^2 performance in worse case due to all the branching.
+
+    Idea2: In the computation for the best singlesale, actually compute the best
+    solution for every position. Therefore if combine a forward pass (moving
+    the end time) with a backward pass (moving the start time) can get the 
+    best solutions for every possible partition in linear time.
+    Time: O(N), Space: O(N)
+
+         0  1  2  3  4  5  6
+    a = [5, 3, 7, 8, 2, 1, 4]
+    ans: (1, 3) and (5, 6)
+    """
+
+    # Forward pass
+    best_trades_forward = []
+    run_min = a[0]
+    argmin = 0
+    best_trade = Trade(0, 1, float('-inf'))
+    for i in range(1, len(a) - 1):
+        # Start (0, 1) and ends at (len(a) - 3, len(a) - 2))
+        price = a[i]
+        if price - run_min > best_trade.profit:
+            best_trade = Trade(argmin, i, price - run_min)
+        if price < run_min:
+            argmin, run_min = i, price
+        best_trades_forward.append(best_trade)
+
+    # Backward pass
+    best_trades_backward = []
+    run_max = a[len(a) - 1]
+    argmax = len(a) - 1
+    best_trade = Trade(len(a) - 2, len(a) - 1, float('-inf'))
+    for i in range(len(a) - 2, 0, -1):
+        # Starts (len(a) -2, len(a) - 1) and ends at (1, 2)
+        price = a[i]
+        if run_max - price > best_trade.profit:
+            best_trade = Trade(i, argmax, run_max - price)
+        if price > run_max:
+            argmax, run_max = i, price
+        best_trades_backward.append(best_trade)
+    best_trades_backward.reverse()
+
+    # Combined answer
+    best_combined_profit = float('-inf')
+    for i in range(len(best_trades_forward)):
+        if best_trades_forward[i].profit > best_combined_profit:
+            best_trades = [best_trades_forward[i]]
+            best_combined_profit = best_trades_forward[i].profit
+        if best_trades_backward[i].profit > best_combined_profit:
+            best_trades = [best_trades_backward[i]]
+            best_combined_profit = best_trades_backward[i].profit
+        if (
+                best_trades_forward[i].profit + 
+                best_trades_backward[i].profit > best_combined_profit
+            ):
+            best_trades = [best_trades_forward[i], best_trades_backward[i]]
+            best_combined_profit = (
+                    best_trades_forward[i].profit + 
+                    best_trades_backward[i].profit
+            )
+
+    return [(trade.start, trade.end) for trade in best_trades]
+
