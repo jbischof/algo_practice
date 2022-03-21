@@ -17,6 +17,12 @@ class NaryNode(object):
         self.edges = []
 
 
+class Edge(object):
+    def __init__(self, dest, value=None):
+        self.dest = dest
+        self.value = value
+
+
 def eval_tree_expr(root):
     """
     Task: evaluate arithmetic expression on tree
@@ -534,3 +540,114 @@ def highest_path_sum(root):
     return max_sum + root.value
 
 
+def highest_edge_sum(root):
+    """
+    Compute the largest path sum on edges of an n-ary tree from root to leaf.
+
+    Easiest recursion will be to pass sums up the tree. Recursion for root
+    of binary subtree will be root.sum = max(left.sum, right.sum)
+
+    Base case is leaf node, which returns zero (sum of its edges).
+    Time: O(N), Space: O(H)
+
+                        a
+             1/        2|        3\
+              b         c          d
+         4/  5|     6/ 7| 8\
+         e    f      g  h  i 
+
+    root, max_sum
+    e, 0
+    f, 0
+    b, 5
+    g, 0
+    h, 0
+    i, 0
+    c, 8
+    d, 0
+    a, 10
+    return 10
+    """
+
+    # Base case: leaf node
+    if not root.edges:
+        return 0
+
+    # Take max of left and right paths
+    max_sum = 0
+    for edge in root.edges:
+        max_sum = max(highest_edge_sum(edge.dest) + edge.value, max_sum)
+    return max_sum
+
+
+def is_bipartite(g):
+    """
+    Detect if graph is bipartite and return halves if possible.
+
+    Args:
+        g: An adjacency list of graph
+    Returns:
+        Bool, node list
+
+        1 ----- 4   
+          \---\
+        2 ----- 5
+          \---\
+        3 ----- 6
+
+    g = {
+        1: [4, 5, 6],
+        2: [4, 6],
+        3: [5, 6],
+        4: [1, 2],
+        5: [1, 3, 6 (bad)],
+        6: [1, 2, 3, 5 (bad)],
+    }
+
+    Idea: Create two sets. Use BFS to travese graph. For every node put in one
+    set and then put all connected nodes in another. When see edge to visited
+    node, check that allocated to the wrong set.
+    Time: O(|V| + |E|), Space: O(|E|)
+
+    node, queue, sets, visited
+    1: [4, 5, 6], [[1], [4, 5, 6]], [1, 4, 5, 6]
+    4: [5, 6, 2], [[1, 2], [4, 5, 6]], [1, 4, 5, 6, 2]
+    5: [6, 2, 3], [[1, 2, 3], [4, 5, 6]] -> but this fails set test since
+                                            5 and 6 in same test
+
+
+    # Try again with bad edge removed
+    node, queue, sets, visited
+    1: [4, 5, 6], [[1], [4, 5, 6]], [1, 4, 5, 6]
+    4: [5, 6, 2], [[1, 2], [4, 5, 6]], [1, 4, 5, 6, 2]
+    5: [6, 2, 3], [[1, 2, 3], [4, 5, 6]], [1, 4, 5, 6, 2, 3]
+    6: [2, 3], [[1, 2, 3], [4, 5, 6]], [1, 4, 5, 6, 2, 3]
+    2: [3], [[1, 2, 3], [4, 5, 6]], [1, 4, 5, 6, 2, 3]
+    3: [], [[1, 2, 3], [4, 5, 6]], [1, 4, 5, 6, 2, 3]
+    return True, [[1, 2, 3], [4, 5, 6]] 
+    """
+
+    sets = [set(), set()]
+    visited = set()
+    not_visited = set(g.keys())
+    queue = collections.deque()
+    while queue or not_visited:
+        if not queue:
+            # Find disconnected parts of graph
+            first = next(iter(not_visited)) 
+            queue.append(first)
+            visited.add(first)
+            not_visited.remove(first)
+            sets[0].add(first)
+        node = queue.popleft()
+        node_type = 0 if node in sets[0] else 1
+        for edge in g[node]:
+            if edge in sets[node_type]:
+                # If edge in same set, partition impossible
+                return False, []
+            sets[1 - node_type].add(edge)
+            if edge not in visited:
+                queue.append(edge)
+            visited.add(edge)
+            not_visited.discard(edge)
+    return True, sets

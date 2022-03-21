@@ -1,6 +1,6 @@
 import unittest
 import prep2
-from prep2 import Node, NaryNode, Annotation, AlphaBlock
+from prep2 import Node, NaryNode, Edge, Annotation, AlphaBlock
 
 class TestPrep2(unittest.TestCase):
     def test_eval_tree_expr(self):
@@ -89,11 +89,13 @@ class TestPrep2(unittest.TestCase):
         self.assertEqual(prep2.remove_Xx_repeats('abcCkDdppGGa'), 'abkppGGa') 
 
     def test_highest_path_sum(self):
-        #                1
-        #      /         |         \
-        #      2         3          4
-        #  /   |      /  |  \
-        # 5    6      7  8  9 
+        """
+                        1
+              /         |         \
+              2         3          4
+          /   |      /  |  \
+         5    6      7  8  9 
+        """
         one = NaryNode(1)
         two = NaryNode(2)
         three = NaryNode(3)
@@ -107,3 +109,49 @@ class TestPrep2(unittest.TestCase):
         two.edges = [five, six]
         three.edges = [seven, eight, nine]
         self.assertEqual(prep2.highest_path_sum(one), 13)
+
+    def test_highest_edge_sum(self):
+        """
+                        a
+             1/        2|        3\
+              b         c          d
+         4/  5|     6/ 7| 8\
+         e    f      g  h  i 
+        """
+        a = NaryNode('a')
+        b = NaryNode('b')
+        c = NaryNode('c')
+        d = NaryNode('d')
+        e = NaryNode('e')
+        f = NaryNode('f')
+        g = NaryNode('g')
+        h = NaryNode('h')
+        i = NaryNode('i')
+        a.edges = [Edge(b, 1), Edge(c, 2), Edge(d, 3)]
+        b.edges = [Edge(e, 4), Edge(f, 5)]
+        c.edges = [Edge(g, 6), Edge(h, 7), Edge(i, 8)]
+        self.assertEqual(prep2.highest_edge_sum(a), 10)
+
+    def test_is_bipartite(self):
+        g = {
+            1: [4, 5, 6],
+            2: [4, 6],
+            3: [5, 6],
+            4: [1, 2],
+            5: [1, 3],
+            6: [1, 2, 3],
+        }
+        res1 = prep2.is_bipartite(g)
+        self.assertTrue(res1[0])
+        # Make second bipartite set
+        g[7] = [8, 9]
+        g[8] = [7]
+        g[9] = [7]
+        res2 = prep2.is_bipartite(g)
+        self.assertTrue(res2[0])
+        # Violate bipartite relation
+        g[5].append(6)
+        g[6].append(5)
+        res3 = prep2.is_bipartite(g)
+        self.assertFalse(res3[0])
+
