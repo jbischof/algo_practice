@@ -44,6 +44,17 @@ class TestGraph(unittest.TestCase):
             self.assertListEqual(image[row], flood_fill_image[row])
 
     def test_has_cycle(self):
+        """
+
+                 A------\
+              ^     \    \
+             /       v    v 
+             D       B -> C
+             ^      /      \
+              \    v        v
+                E           F
+
+        """
         g = {
             'A': ['B'],
             'B': ['C', 'E'],
@@ -53,8 +64,28 @@ class TestGraph(unittest.TestCase):
             'F': [],
         }
         self.assertTrue(graph.has_cycle(g))
+        # Remove back edge between D and A
         g['D'] = []
         self.assertFalse(graph.has_cycle(g))
+        # Check that OK if two nodes pointing to same child without cycle
+        g['A'].append('C')
+        self.assertFalse(graph.has_cycle(g))
+
+    def test_topo_sort(self):
+        g = {
+            'a': ['b', 'f'],
+            'b': ['c', 'd', 'f'],
+            'c': ['d'],
+            'd': ['e', 'f'],
+            'e': ['f'],
+            'f': [],
+        }
+        res1 = graph.topo_sort(g)
+        self.assertTrue(res1[0])
+        self.assertListEqual(res1[1], ['a', 'b', 'c', 'd', 'e', 'f'])
+        # Add a backlink between 'f' and 'b'
+        g['f'].append('a')
+        self.assertFalse(graph.topo_sort(g)[0])
 
     def test_is_bipartite(self):
         g = {

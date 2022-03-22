@@ -1,5 +1,5 @@
 """Graph problems."""
-from collections import deque
+from collections import deque, Counter
 
 def find_maze_path(maze, start, end):
     """
@@ -160,14 +160,9 @@ def has_cycle(graph):
     """
     Detect if directed graph has cycles.
 
-    Idea: Need visited fields (or map) for graphs precisely because cycles are
-    possible. If there is more than one way to get to a node we can go around
-    in circles forever. However, with DAGs/trees this isn't possible so no
-    visited map is needed.
-
-    Therefore, do normal DFS on graph with visited map. If try to add a visited
-    node back to the stack, return False. If stack empties without this event,
-    return True.
+    Idea: Cycle in graph if child node of DFS tree points back to parent.
+    Maintain set of "grey" unprocessed nodes and if during traversal point back
+    to grey node then cycle exists.
 
     Time: O(|V| + |E|), Space: O(|V|)
     graph = {
@@ -178,36 +173,122 @@ def has_cycle(graph):
         'E': ['D'],
         'F': [],
     }
+
+    # No cycles in this graph unless D->A edge is added
                  A
               ^     \
-             /       v 
+         (c) /       v 
              D       B -> C
              ^      /      \
               \    v        v
                 E           F
-    Start: A
-    curr, stack, visited
-    -, [A], []
-    A, [B], [A]
-    B, [C, E], [A, B]  
-    E, [C, D], [A, B, E]
-    D, [C, A] -> wait A in visited -> Return True
-    If no connection between D and A:
-    D, [C], [A, B, E, D]
-    C, [F], [A, B, E, D, C]
-    F, [], [A, B, E, D, C, F] -> Return False
+
+    # This graph has no cycles but multiple nodes point to C
+    # This is OK because C only points to childless node F
+                 A------\
+                    \    \
+                     v    v 
+             D       B -> C
+             ^      /      \
+              \    v        v
+                E           F
+
+    Start: B
+    node, white, grey, ret
+    -, [A, B, C, D, E, F], [], False
+    B, [A, C, D, E, F], [B], False
+    C, [A, D, E, F], [B, C], False
+    F, [A, D, E], [B, C], False
+    E, [A, D], [B, E], False
+    D, [A], [B], False
+    A, [], [], False
+    return False
+
+    Now add back edge D -> A, same until hit D
+    D, [A], [B, D], False
+    A, [], [B, D], False -> but A points to B so return True!
+
+    Finally, add edge between A and C in first problem. Can see this doesn't
+    make a difference since C is out of the grey set by the time you get to A.
     """
 
-    stack = [next(iter(graph))]
-    visited = set()
-    while stack:
-        node = stack.pop()
-        for edge in graph[node]:
-            if edge in visited:
-                return True
-            stack.append(edge)
-            visited.add(edge)
+    white = set(graph.keys())
+    grey = set()
+    while white:
+        if has_cycle_helper(white.pop(), graph, white, grey):
+            return True
     return False
+
+
+def has_cycle_helper(node, graph, white, grey):
+    white.discard(node)
+    grey.add(node)
+    for edge in graph[node]:
+        if edge in grey:
+            # Back edge to parent!
+            return True
+        if has_cycle_helper(edge, graph, white, grey):
+            return True
+    grey.discard(node)
+    return False
+        
+
+def topo_sort(g):
+    """
+    Return a topological sort of graph if possible.
+
+    Args:
+        g: Adjacency list
+    Returns:
+        Bool: Whether can be sorted (no cycles)
+        List: The sort
+
+    g = {
+        'a': ['b', 'f'],
+        'b': ['c', 'd', 'f'],
+        'c': ['d'],
+        'd': ['e', 'f'],
+        'e': ['f'],
+        'f': [],
+    }
+
+    node, grey, inlinks, ret
+    -, [a], [a:0, b:1, c:1, d:2, e:1, f:4], []
+    a, [b], [a:0, b:0, c:1, d:2, e:1, f:3], [a]
+    b, [c], [a:0, b:0, c:0, d:1, e:1, f:2], [a, b]
+    c, [d], [a:0, b:0, c:0, d:0, e:1, f:2], [a, b, c]
+    d, [e], [a:0, b:0, c:0, d:0, e:0, f:1], [a, b, c, d]
+    e, [f], [a:0, b:0, c:0, d:0, e:0, f:0], [a, b, c, d, e]
+    f, [], [a:0, b:0, c:0, d:0, e:0, f:0], [a, b, c, d, e, f]
+    return True, [a, b, c, d, e, f]
+
+    Now suppose f points to b
+    -, [a], [a:0, b:2, c:1, d:2, e:1, f:4], []
+    a, [], [a:0, b:1, c:1, d:2, e:1, f:3], [a]
+    Now the grey set is empty but still links!
+    return False, []
+    """
+
+    inlinks = Counter({node: 0 for node in g})
+    ret = []
+    # Count in-links from each node
+    for node in g:
+        for edge in g[node]:
+            inlinks[edge] += 1
+    # Start traversal with parent-free nodes
+    grey = set([node for node in inlinks if inlinks[node] == 0])
+    while grey:
+        node = grey.pop()
+        ret.append(node)
+        for edge in g[node]:
+            inlinks[edge] -= 1
+            if inlinks[edge] == 0:
+                grey.add(edge)
+    if any(inlinks[node] > 0 for node in inlinks):
+        # If any links left they are backlinks and this is not a DAG
+        print(inlinks)
+        return False, []
+    return True, ret
 
 
 def is_bipartite(g):
@@ -281,3 +362,5 @@ def is_bipartite(g):
             visited.add(edge)
             not_visited.discard(edge)
     return True, sets
+
+
