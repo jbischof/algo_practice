@@ -55,3 +55,27 @@ class TestGraph(unittest.TestCase):
         self.assertTrue(graph.has_cycle(g))
         g['D'] = []
         self.assertFalse(graph.has_cycle(g))
+
+    def test_is_bipartite(self):
+        g = {
+            1: [4, 5, 6],
+            2: [4, 6],
+            3: [5, 6],
+            4: [1, 2],
+            5: [1, 3],
+            6: [1, 2, 3],
+        }
+        res1 = graph.is_bipartite(g)
+        self.assertTrue(res1[0])
+        # Make second bipartite set
+        g[7] = [8, 9]
+        g[8] = [7]
+        g[9] = [7]
+        res2 = graph.is_bipartite(g)
+        self.assertTrue(res2[0])
+        # Violate bipartite relation
+        g[5].append(6)
+        g[6].append(5)
+        res3 = graph.is_bipartite(g)
+        self.assertFalse(res3[0])
+
