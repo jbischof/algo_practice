@@ -1,6 +1,7 @@
 import graph
 import unittest
 import copy
+from graph import Node, Edge
 
 class TestGraph(unittest.TestCase):
     def test_find_maze_path(self):
@@ -109,4 +110,58 @@ class TestGraph(unittest.TestCase):
         g[6].append(5)
         res3 = graph.is_bipartite(g)
         self.assertFalse(res3[0])
+
+    def test_dijkstra(self):
+        reyk = Node("reyk")
+        oslo = Node("oslo")
+        london = Node("london")
+        berlin = Node("berlin")
+        rome = Node("rome")
+        moscow = Node("moscow")
+        belgrade = Node("belgrade")
+        athens = Node("athens")
+        reyk.edges = [
+                Edge(5, oslo),
+                Edge(4, london),
+        ]
+        oslo.edges = [
+                Edge(5, reyk),
+                Edge(3, moscow),
+                Edge(1, berlin),
+        ]
+        london.edges = [
+                Edge(4, reyk),
+                Edge(3, berlin),
+        ]
+        berlin.edges = [
+                Edge(1, oslo),
+                Edge(9, belgrade),
+                Edge(2, rome),
+                Edge(3, london),
+        ]
+        rome.edges = [
+                Edge(2, berlin),
+                Edge(2, athens),
+        ]
+        moscow.edges = [
+                Edge(3, oslo),
+                Edge(5, belgrade),
+                Edge(4, athens),
+        ]
+        belgrade.edges = [
+                Edge(9, berlin),
+                Edge(1, athens),
+                Edge(5, moscow),
+        ]
+        athens.edges = [
+                Edge(2, rome),
+                Edge(1, belgrade),
+                Edge(4, moscow),
+        ]
+        res = graph.dijkstra(reyk, belgrade)
+        self.assertEqual(res[0], 11)
+        self.assertListEqual(
+                res[1], 
+                ['reyk', 'oslo', 'berlin', 'rome', 'athens', 'belgrade']
+        ) 
 

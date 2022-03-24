@@ -1,5 +1,29 @@
 """Graph problems."""
 from collections import deque, Counter
+import heapq
+
+class Node(object):
+    def __init__(self, value=None):
+        self.value = value
+        self.edges = []
+        self.distance = float('inf')
+        self.visited = False
+        self.from_node = None
+
+    def __lt__(self, other):
+        return self.distance < other.distance
+
+    def __str__(self):
+        return (f"{self.value}: Distance: {self.distance}, " 
+        f"Visited: {self.visited}, From Node: {self.from_node.value}")
+
+
+class Edge(object):
+    def __init__(self, value, node_to=None, node_from=None):
+        self.value = value
+        self.node_to = node_to
+        self.node_from = node_from
+
 
 def find_maze_path(maze, start, end):
     """
@@ -286,7 +310,6 @@ def topo_sort(g):
                 grey.add(edge)
     if any(inlinks[node] > 0 for node in inlinks):
         # If any links left they are backlinks and this is not a DAG
-        print(inlinks)
         return False, []
     return True, ret
 
@@ -362,5 +385,56 @@ def is_bipartite(g):
             visited.add(edge)
             not_visited.discard(edge)
     return True, sets
+
+
+def dijkstra(start, end):
+    """
+    Implement dijkstra's algorithm
+
+    Args:
+        start: Starting node
+        end: Destination node
+    """
+
+    heap = [start]
+    start.distance = 0
+
+    while heap:
+        node = heapq.heappop(heap)
+        if node.visited:
+            # Possible to add node to queue multiple times since visited only
+            # updated when node is black
+            continue
+        node.visited = True
+        if node == end:
+            path = path_from_endpoints(start, end)
+            return end.distance, path
+        for edge in node.edges:
+            # Update distances
+            new_node = edge.node_to
+            if node.distance + edge.value < new_node.distance:
+                new_node.distance = node.distance + edge.value
+                # Remember where you came from
+                new_node.from_node = node
+            # Insert into priority queue if not visited
+            if not new_node.visited:
+                heapq.heappush(heap, new_node)
+
+    # Destination not found
+    return None, None
+
+
+def path_from_endpoints(start, end):
+    """
+    Return traversal path from start to end node using `node_from` pointers.
+    """
+
+    path = [end.value]
+    node = end
+    while node != start:
+        path.append(node.from_node.value)
+        node = node.from_node
+    path.reverse()
+    return path
 
 
