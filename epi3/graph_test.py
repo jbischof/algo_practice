@@ -165,3 +165,44 @@ class TestGraph(unittest.TestCase):
                 ['reyk', 'oslo', 'berlin', 'rome', 'athens', 'belgrade']
         ) 
 
+    def test_mst(self):
+        """
+                  A                A
+              4/  | 5\             | 
+              B   |   E  -->   B   |   E
+              |  3|   |2       |  3|   |2
+             2|    \ /        2|    \ /
+              C------D         C------D
+                 1                1     
+        """
+        a = Node('a')
+        b = Node('b')
+        c = Node('c')
+        d = Node('d')
+        e = Node('e')
+        a.edges = [
+                Edge(4, b, a),
+                Edge(3, d, a),
+                Edge(5, e, a),
+        ]
+        b.edges = [
+                Edge(4, a, b),
+                Edge(2, c, b),
+        ]
+        c.edges = [
+                Edge(2, b, c),
+                Edge(1, d, c),
+        ]
+        d.edges = [
+                Edge(1, c, d),
+                Edge(2, e, d),
+                Edge(3, a, d),
+        ]
+        e.edges = [
+                Edge(5, a, e),
+                Edge(2, d, e),
+        ]
+        res = graph.mst(a)
+        print([str(edge) for edge in res[1].values()])
+        self.assertEqual(res[0], 8)
+

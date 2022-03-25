@@ -24,6 +24,15 @@ class Edge(object):
         self.node_to = node_to
         self.node_from = node_from
 
+    def __lt__(self, other):
+        return self.value < other.value
+
+    def __str__(self):
+        return (
+        f"Weight: {self.value}, "
+        f"From: {(self.node_from.value if self.node_from else None)}, "
+        f"To: {(self.node_to.value if self.node_to else None)}")
+
 
 def find_maze_path(maze, start, end):
     """
@@ -437,4 +446,69 @@ def path_from_endpoints(start, end):
     path.reverse()
     return path
 
+
+def mst(root):
+    """
+    Find the minimum spanning tree for graph g using Prim's algorithm.
+
+    Args:
+        root: Arbitrary node to use as starting point.
+    Returns:
+        int: Cost of MST
+        dict: {Node.value: Edge}, Edge connecting each node to the MST
+
+    Note: If graph not fully connected with find MST for subgraph containing the
+    root.
+
+    Time: O(E|log|V|), Space: O(log|E|)
+    
+    Example:
+                  A                A
+              4/  | 5\             | 
+              B   |   E  -->   B   |   E
+              |  3|   |2       |  3|   |2
+             2|    \ /        2|    \ /
+              C------D         C------D
+                 1                1     
+    node, heap, ret
+    A, [(3, A, D), (4, A, B), (5, A, E)], {A: None}
+    D, [(1, D, C), (2, D, E), (4, A, B), (5, A, E)]
+       {A: None, D: (3, A, D)}
+    C, [(2, D, E), (2, C, B), (4, A, B), (5, A, E)]
+       {A: None, D: (3, A, D), C: (1, D, C)}
+    E, [(2, C, B), (4, A, B), (5, A, E)]
+       {A: None, D: (3, A, D), C: (1, D, C), E: (2, D, E)}
+    B, [(4, A, B), (5, A, E)]
+       {A: None, D: (3, A, D), C: (1, D, C), E: (2, D, E), B: (2, C, B)}
+
+    return 8, {A: None, D: (3, A, D), C: (1, D, C), E: (2, D, E), B: (2, C, B)}
+ 
+    """
+
+    heap = [edge for edge in root.edges]
+    heapq.heapify(heap)
+    root.visited = True
+    ret = {root.value: Edge(0, root)}
+
+    while heap:
+        # Pop the lowest cost edge not part of the tree
+        edge = heapq.heappop(heap)
+        node = edge.node_to
+        if node.visited or node == edge.node_from:
+            # No loops or visited nodes
+            continue
+        if node.value not in ret or edge.value < ret[node.value].value:
+            ret[node.value] = edge
+
+        # Process node's edges if not already explored
+        for edge in node.edges:
+            if not edge.node_to.visited:
+                heapq.heappush(heap, edge)
+        node.visited = True
+
+    # Compute total cost
+    cost = 0
+    for edge in ret.values():
+        cost += (edge.value if edge else 0)
+    return cost, ret
 
