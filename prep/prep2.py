@@ -580,3 +580,113 @@ def highest_edge_sum(root):
     return max_sum
 
 
+def find_valid_sequences(s):
+    """
+    Return subsequences of string s between 'BEGIN' and 'END' tokens.
+    All tokens are space separated.  Note that multiple BEGIN and END tokens may
+    occur in sequence, but this is not valid. We just want substrings between 
+    BEGIN and END.
+
+    Note: This question was part of my horrible Stripe screen.
+
+    Example:
+    s = "BEGIN BEGIN 1 0 BEGIN 4 3 9 END END 5 4 BEGIN 4 2 1 END 3 END"
+    return ["4 3 9", "4 2 1"]
+
+    Idea: Split the string into a list of tokens. Keep track of the most recent
+    special token seen. If BEGIN is at the top of the stack keep recording, but 
+    if see BEGIN again before END throw it away. If see END next, save the 
+    sequence to the return value.
+
+    Time: O(N)
+    Space: O(N)
+    
+    s = "BEGIN BEGIN 1 0 BEGIN 4 3 9 END END 5 4 BEGIN 4 2 1 END 3 END"
+              0        1        2    3    4        5    6    7    8      9
+    tokens = ["BEGIN", "BEGIN", "1", "0", "BEGIN", "4", "3", "9", "END", "END",
+              10   11   12       13   14   15   16     17   18
+              "5", "4", "BEGIN", "4", "2", "1", "END", "3", "END"]
+    i,  token, ls, buffer, res 
+    0,  begin, begin, [], []
+    1,  begin, begin, [], []
+    2,  1,     begin, [1], []
+    3,  0,     begin, [1, 0], []
+    4,  begin, begin, [], []
+    5,  4,     begin, [4], []
+    6,  3,     begin, [4, 3], []
+    7,  9,     begin, [4, 3, 9], []
+    8,  end,   begin, [], ["4 3 9"]
+    9,  end,   end,   [], ["4 3 9"]
+    10, 5,     end,   [], ["4 3 9"]
+    11, 4,     end,   [], ["4 3 9"]
+    12, begin, end,   [], ["4 3 9"]
+    13, 4,     begin, [4], ["4 3 9"]
+    etc etc
+    """
+
+    begin = "BEGIN"
+    end = "END"
+    specials = [begin, end]
+    res = []
+    buffer = []
+
+    tokens = s.split(" ")
+    last_special = begin
+    # No point starting before the first BEGIN
+    try:
+        start = tokens.index(begin)
+    except ValueError:
+        # No BEGIN token
+        return []
+
+    for token in tokens[start: ]:
+        if last_special == begin:
+            if token not in specials:
+                buffer.append(token)
+            elif token == end and len(buffer) > 0:
+                res.append(" ".join(buffer))
+        if token in [begin, end]:
+            # Clear buffer if see special token
+            last_special = token
+            buffer = []
+
+    return res
+
+
+def correct_itinerary(itin, g):
+    """
+    Find the most likely itinerary given a list of city codes remembered by a
+    friend.
+
+    Args:
+        itin: A list of city codes
+        g: An adjacency list of real city codes
+
+    Objective: Find the list of city codes (of the same length) with the fewest
+    number of total letter changes from the itin list and that is a valid
+    path.
+
+    g = {
+        "BBB": ["GOO", "DDY", "AAA"],
+        "GOO": ["BBB", "DDY", "GLE"],
+        "AAA": ["BBB", "DDY", "BBX"],
+        "DDY": ["BBB", "GOO", "AAA", "GLE", "BBX", "CCC"],
+        "GLE": ["GOO", "DDY", "CCC"],
+        "BBX": ["AAA", "DDY", "CCC"],
+        "CCC": ["BBX", "DDY", "GLE"],
+        "ZZZ": ["BBB", "GOO", "AAA", "GLE", "BBX", "CCC"],
+    }
+    """
+
+    pass
+
+
+def edit_dist3(first, second):
+    """
+    Gives the edit distance of two three letter words.
+    """
+    dist = 0
+    for i in range(3):
+        if first[i] != second[i]:
+            dist += 1
+    return dist

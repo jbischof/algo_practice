@@ -132,3 +132,10 @@ class TestPrep2(unittest.TestCase):
         c.edges = [Edge(g, 6), Edge(h, 7), Edge(i, 8)]
         self.assertEqual(prep2.highest_edge_sum(a), 10)
 
+    def test_find_valid_sequences(self):
+        s = "BEGIN BEGIN 1 0 BEGIN 4 3 9 END END 5 4 BEGIN 4 2 1 END 3 END"
+        self.assertListEqual(prep2.find_valid_sequences(s), ["4 3 9", "4 2 1"])
+        self.assertFalse(prep2.find_valid_sequences("END 4 5 END"))
+
+
+
