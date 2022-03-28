@@ -183,3 +183,103 @@ def inorder_traversal_stack(root):
                 stack.append(curr.right)
     return ret
 
+
+def compute_successor(node, first=True):
+    """
+    Compute the next node in an inorder traversal given pointer to ref node.
+
+              1
+            /   \
+           2     3
+          / \
+         4   5
+              \
+               6
+    Example:
+    1: return 3
+    2: return 5
+    3: Go to 1; return None
+    4: return 2
+    5: return 6
+    6: Go to 5, go to 2, return 1
+    return 1
+
+    Idea: If node has right child, successor is leftmost node in that subtree.
+    If no right child, need to use parent pointers to go back up the tree.
+    - If no parent, you are the root! Return None
+    - If you're the left child of your parent, parent is the answer
+    - If you're the right child of your parent, algorithm essentially recurses
+      up the tree, looking for the successor of your parent as if it had no
+      right child.
+    Time: O(H), Space: O(H)
+    """
+
+    # Base cases
+    if node.right and first:
+        # Right child: find leftmost node of subtree
+        node = node.right
+        while node.left:
+            node = node.left
+        return node
+    elif not node.parent:
+        # Root without right child
+        return None
+    elif node.parent.left == node:
+        # Left child of parent without own right child
+        return node.parent
+
+    # Uh oh, you are the right child of your parent.
+    # Recurse on the parent without right subtree
+    return compute_successor(node.parent, False)
+
+
+def compute_successor_nr(node):
+    """
+    Compute the next node in an inorder traversal given pointer to ref node.
+    
+    This version does not use the tail recursion of the previous one.
+
+              1
+            /   \
+           2     3
+          / \
+         4   5
+              \
+               6
+    Example:
+    1: return 3
+    2: return 5
+    3: Go to 1; return None
+    4: return 2
+    5: return 6
+    6: Go to 5, go to 2, return 1
+    return 1
+
+    Idea: If node has right child, successor is leftmost node in that subtree.
+    If no right child, need to use parent pointers to go back up the tree.
+    - If no parent, you are the root! Return None
+    - If you're the left child of your parent, parent is the answer
+    - If you're the right child of your parent, algorithm essentially recurses
+      up the tree, looking for the successor of your parent as if it had no
+      right child.
+    Time: O(H), Space: O(H)
+    """
+
+    # Base cases
+    if node.right:
+        # Right child: find leftmost node of subtree
+        node = node.right
+        while node.left:
+            node = node.left
+        return node
+    elif not node.parent:
+        # Root without right child
+        return None
+
+    # If triggered, you are the right child of your parent.
+    # Need to find subtree where your parent is left child
+    while node.parent and node.parent.right == node:
+        node = node.parent
+
+    return node.parent
+
