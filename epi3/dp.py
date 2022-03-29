@@ -1,5 +1,32 @@
 """Dynamic programming problems."""
 
+def fib_bu(n):
+    """
+    Compute the nth fib number from the bottom up.
+
+    Args:
+        n: Int
+    Returns:
+        Int. Fib(n)
+
+    f(0) = 0, f(1) = 1
+    f(n) = f(n-1) + f(n-2)
+
+    Time: O(n), Space: O(n)
+    """
+
+    # Break off initial values
+    if n == 0:
+        return 0
+    if n == 1:
+        return 1
+    memo = [0] + [1] * n
+    for i in range(2, n + 1):
+        memo[i] = memo[i - 1] + memo[i - 2]
+
+    return memo[n]
+
+
 def num_score_combs(n, scores):
     """
     Determine the number of unqiue combinations of the score values that sum
@@ -117,7 +144,7 @@ def longest_nd_subsequence(a):
     """
 
     # Tablular memo. Initialize first entry to one
-    memo = [1] * len(a - 1)
+    memo = [1] * len(a)
 
     for i in range(1, len(a)):
         ans = 1
