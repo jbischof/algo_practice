@@ -91,6 +91,89 @@ def num_score_combs(n, scores):
     return memo[n_score - 1][n]
 
 
+def min_weight_path_triangle(t):
+    """
+    Find minimum weight path from top to bottom in a triangle.
+
+    A path starts at the top and must descend continuously until it reaches the
+    bottom row.
+
+    Args:
+        t: A nested array where len(t[i]) == i
+    Returns:
+        Int. The weight of the min path.
+
+    Q: How do you determine adjacent nodes in the triangle?
+    A: If at entry j of level, have access to (j, j+1) in level i+1
+
+    Idea 1: Build solution from bottom up. At each entry [i, j], branch the
+    decision to try (i+1, j) and (i+1, j+1). Base case is len(t) path, where
+    you write the final sum to a ret array. For DP could memoize solutions in
+    terms of i, j tuple since two ways to get to every i, j from the level i-1.
+    Then total solution space is O(N^2) kinda like a lower triangular matrix.
+
+    Idea 2: Build solution from the top down. In this case choose each entry
+    in t[len(t) - 1] and then choose the min of the two paths that could have
+    reached there: 
+    min_path(i, j) = min(min_path(i - 1, j), min_path(i - 1, j - 1)) + t[i, j]
+    In the case still want to cache the value of min_path(i, j) since will each
+    entry will be called two times.
+    Time: O(N^2), Space: O(N^2)
+
+    Example:
+    t = [
+        #0
+        [2], # level 0
+        #0  1 
+        [4, 4], # level 1
+        #0  1  2
+        [8, 5, 6], # level 2
+        #0  1  2  3
+        [4, 2, 6, 2], # level 3
+        #0  1  2  3  4
+        [1, 5, 2, 3, 4], # level 4
+    ]
+    Answer: 15 ([2, 4, 5, 2, 2])
+    i, j
+    4, 0 = min(inf, f(3, 0)) 
+    3, 0 = min(inf, f(2, 0)) 
+    2, 0 = min(inf, f(1, 0)) 
+    1, 0 = min(inf, f(0, 0)) = 2 + 4 
+    2, 0 = min(inf, 6) + 8 = 14
+    3, 0 = min(inf, 14) + 4 = 18
+    4, 0 = min(inf, 18) + 1 = 19
+    4, 1 = min(18, f(3, 1))
+    3, 1 = min(14, f(2, 1))
+    2, 1 = min(6, f(1, 1))
+    1, 1 = min(2, inf) + 4 = 6
+    2, 1 = min(6, 6) + 5 = 11
+    etc etc
+    """
+
+    memo = [[None] * (i + 1) for i in range(len(t))]
+    memo[0][0] = t[0][0]
+    for j in range(len(t)): 
+        min_weight_path_triangle_helper(len(t) - 1, j, t, memo)
+    return min(memo[-1])
+
+
+def min_weight_path_triangle_helper(i, j, t, memo):
+    # Base case: already in memo 
+    if memo[i][j] is not None:
+        return memo[i][j]
+
+    min_left = (
+            min_weight_path_triangle_helper(i - 1, j - 1, t, memo)
+            if j > 0 else float('inf')
+    )
+    min_right = (
+            min_weight_path_triangle_helper(i - 1, j, t, memo) 
+            if j < len(t[i]) - 1 else float('inf')
+    )
+    memo[i][j] = min(min_left, min_right) + t[i][j]
+    return memo[i][j]
+
+
 def longest_nd_subsequence(a):
     """
     Find the length of the longest nondecreasing subsequence in an array.
@@ -154,3 +237,51 @@ def longest_nd_subsequence(a):
         memo[i] = ans
     return max(memo)
 
+
+def has_array_sequence(a, s):
+    """
+    Find 1D sequence `s` in 2D array moving left, right, up or down in each step
+
+    Args:
+        a: A N x M 2D array
+        s: A 1D array of length J
+
+    Time: O(N x M x J), Space: O(N x M x J)
+
+    """
+
+    memo = {}
+    ret = False
+    for i in range(len(a)):
+        for j in range(len(a[0])):
+            ret = ret or has_array_sequence_helper(i, j, 0, a, s, memo)
+    return ret
+
+
+def has_array_sequence_helper(i, j, offset, a, s, memo):
+    # Base case 1: ans in memo
+    if (i, j, offset) in memo:
+        return memo[(i, j, offset)]
+
+    # Base case 2: bad coordinates
+    if i < 0 or i > len(a) - 1 or j < 0 or j > len(a[0]) - 1:
+        return False
+
+    # Base case 3: offset is len(s) - 1
+    if offset == len(s) - 1:
+        memo[(i, j, offset)] = a[i][j] == s[offset]
+        return memo[(i, j, offset)] 
+
+    # Base case 4: offset doesn't fit here
+    if a[i][j] != s[offset]:
+        memo[(i, j, offset)] = False
+        return memo[(i, j, offset)] 
+
+    # Otherwise recurse on the neighbors
+    memo[(i, j, offset)] = any([
+        has_array_sequence_helper(i + 1, j, offset + 1, a, s, memo),
+        has_array_sequence_helper(i - 1, j, offset + 1, a, s, memo),
+        has_array_sequence_helper(i, j + 1, offset + 1, a, s, memo),
+        has_array_sequence_helper(i, j - 1, offset + 1, a, s, memo),
+    ])
+    return memo[(i, j, offset)] 
