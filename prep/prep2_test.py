@@ -137,5 +137,11 @@ class TestPrep2(unittest.TestCase):
         self.assertListEqual(prep2.find_valid_sequences(s), ["4 3 9", "4 2 1"])
         self.assertFalse(prep2.find_valid_sequences("END 4 5 END"))
 
+    def test_bash_expansion(self):
+        s = '_{a,b,c}{1,2}'
+        self.assertEqual(prep2.bash_expansion(s), '_a1 _a2 _b1 _b2 _c1 _c2')
+
+
+
 
 

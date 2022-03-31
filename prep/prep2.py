@@ -690,3 +690,95 @@ def edit_dist3(first, second):
         if first[i] != second[i]:
             dist += 1
     return dist
+
+
+def bash_expansion(s):
+    """
+    Write a function to do (simplified) bash-style brace expansion.
+
+    The popular command-line shell bash expands strings that include braces with
+    lists of strings inside of them. For example:
+
+    $ echo _{a,b,c}{1,2}
+    _a1 _a2 _b1 _b2 _c1 _c2
+
+    Thought: Assuming no nested braces, every output string is the cartesian
+    product of the parameters in each brace. If knew the number of braces could
+    do this in a nested for loop, but here there could be any number of braces.
+
+    ret = bytearray()
+    for k in s1:
+        for j in s2:
+            ret.append(_ + k + j + " ")
+
+    How to automate for an unknown number of arrays?
+    Idea: Break string into a list of arrays where fixed components are 1x1
+    and dyanmic components are kx1. Then can write recursive function that adds
+    all the possible suffixes to each prefix.
+
+    s= _{a,b,c}{1,2}
+    inputs = [["-"], ["a", "b", "c"], ["1", "2"]] 
+
+    Time and space are really variable here because depends on expansions.
+       0123456789111
+                 012
+    s= _{a,b,c}{1,2}
+    i, c, inputs
+    -1, -, [[]]
+    0, _, [["_"]] 
+    1, {, [["_"], ["a", "b", "c"]]
+    8, {, [["_"], ["a", "b", "c"], ["1", "2"]]
+    12, end
+    """
+
+    # Process input string
+    ret = []
+    inputs = [[]]
+    i = 0
+    while i < len(s):
+        char = s[i]
+        if char == '{':
+            end = i
+            while s[end] != '}' and end < len(s):
+                end += 1
+            inputs.append(s[(i + 1): end].split(","))
+            i = end + 1
+        else:
+            if len(inputs[-1]) == 0:
+                inputs[-1].append(char)
+            else:
+                inputs[-1] += char
+            i += 1
+
+    bash_expansion_helper(0, "", inputs, ret)
+    return " ".join(ret)
+
+
+def bash_expansion_helper(offset, string, inputs, ret):
+    # Base case: cycled through all inputs
+    if offset == len(inputs):
+        ret.append(string)
+        return
+
+    for char in inputs[offset]:
+        bash_expansion_helper(offset + 1, string + char, inputs, ret)
+
+
+def minmax_split_array(a, k):
+    """
+    Split array a in to k subarrays so that the sum of the minimum array is as
+    large as possible.
+
+    Args:
+        a: An array of ints
+        k: Number of subarrays
+
+    Brute force: Use recursive function to try all the possible splits where
+    there is a least one item in each subarray. Evaluate all the splits for
+    the minimax. Pretty tricky to code up for sure.
+    Time: O(N * choose(N, k - 1)) = O(N^K)
+
+    Idea: Conditional the minimum sum, the problem is as easy as checking
+    whether the array can be split into K or more subarrays 
+    """
+    pass
