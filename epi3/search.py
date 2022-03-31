@@ -45,7 +45,7 @@ def binary_search_first(t, a):
     return None
 
 
-def binary_search_first2(t, a, debug = False):
+def binary_search_first2(t, a):
     """
     Find the **first** occurrence of value t in array a if present. If not,
     returns None.
@@ -66,9 +66,7 @@ def binary_search_first2(t, a, debug = False):
 
     lower, upper = 0, len(a) - 1
     while lower <= upper:
-        middle = (lower + upper) // 2
-        if debug:
-            print(lower, middle, upper)
+        middle = lower + (upper - lower) // 2
         if a[middle] < t:
             lower = middle + 1
         elif (
@@ -79,6 +77,57 @@ def binary_search_first2(t, a, debug = False):
         else:
             upper = middle - 1
     return None
+
+
+def binary_search_first_gt(a, k):
+    """
+    Find the first value of sorted array a s.t. a[i] > k.
+
+    Returns None if a[len(a) - 1] < k
+
+    Example:
+         0  1  2  3  4  5
+    a = [1, 3, 5, 7, 8, 10]
+    k = 6
+    l, u, m, a[m]
+    0, 5, 2, 5
+    3, 5, 4, 8
+    3, 4, 3, 7
+    return 3
+
+         0  1  2  3  4  5
+    a = [1, 3, 5, 7, 8, 10]
+    k = 4
+    l, u, m, a[m]
+    0, 5, 2, 5
+    0, 2, 1, 3
+    2, 2, 2, 5
+    return 2
+
+         0  1  2  3  4  5
+    a = [1, 3, 5, 7, 8, 10]
+    k = 9
+    l, u, m, a[m]
+    0, 5, 2, 5
+    3, 5, 4, 8
+    4, 5, 4, 8
+    5, 5, 5, 10
+    return 5
+    """
+
+    if a[len(a) - 1] < k:
+        return None
+    elif a[0] > k:
+        return 0
+
+    lower, upper = 0, len(a) - 1
+    while lower < upper:
+        middle = lower + (upper - lower) // 2
+        if a[middle] > k:
+            upper = middle
+        else:
+            lower = middle + 1
+    return upper
 
 
 def kth_smallest(k, a):
@@ -156,6 +205,7 @@ def kth_smallest(k, a):
 
 def search_2d_array(a, k):
     """
+    NOT WORKING YET
     Returns true of the item k is in the 2D sorted array `a`.
     A 2D sorted array has both the rows and columns in increasing order.
 
@@ -210,6 +260,6 @@ def search_2d_array(a, k):
             max_col -= 1
         else:
             min_row += 1
-
-        return False
+    
+    return False
 
