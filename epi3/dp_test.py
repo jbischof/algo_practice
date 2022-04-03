@@ -20,6 +20,16 @@ class TestDP(unittest.TestCase):
         self.assertEqual(profit, 10)
         self.assertCountEqual(items, [2, 3])
 
+        # From EPI
+        capacity = 130
+        weights = [20, 8, 60, 55, 40, 70, 85, 25,
+                   30, 65, 75, 10, 95, 50, 40, 10]
+        values = [65, 35, 245, 195, 65, 150, 275, 155,
+                  120, 320, 75, 40, 200, 100, 220, 99]
+        profit, items = dp.knapsack_recurse(capacity, weights, values)
+        self.assertEqual(profit, 695)
+        self.assertCountEqual(items, [14, 9, 7])
+
     def test_longest_nd_subsequence(self):
         a = [0, 8, 4, 12, 2, 10, 6, 14, 1, 9]
         self.assertEqual(dp.longest_nd_subsequence(a), 4)

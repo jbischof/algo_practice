@@ -96,14 +96,7 @@ def knapsack_recurse(capacity, weights, values):
     Determine the optimal combination of items to maximize value under a total
     capacity constraint.
 
-    Issue: No longer clear how to make this a dynamic problem because we now
-    want to distinguish between sets of items that lead to the same
-    (offset, capacity) tuple. For example, at offset 1 can get capacity 1 from
-    a bag with [1, 2] or [3]. If both of these were tied for the best value
-    we'd return [3] with this implementation since we give ties to fewer items
-    in the bag.
-
-    Time: O(2^N), Space(N*2^N)
+    Time: O(N*C), Space(N^2*C) to store the intermediate arrays
 
     Args:
         capacity: Int, total capacity of knapsack
@@ -140,34 +133,42 @@ def knapsack_recurse(capacity, weights, values):
     return 10, [2,3]
     """
 
-    return knapsack_recurse_helper(0, capacity, weights, values)
+    memo = {}
+    return knapsack_recurse_helper(0, capacity, weights, values, memo)
 
 
-def knapsack_recurse_helper(offset, capacity, weights, values):
+def knapsack_recurse_helper(offset, capacity, weights, values, memo):
     """
     Recursive function that passes information UP the stack
     """
 
-    # Base case: all items considered
+    # Base case 1: all items considered
     if offset >= len(weights):
         return 0, []
 
+    # Base case 2: answer in memo
+    if (offset, capacity) in memo:
+        return memo[(offset, capacity)]
+
     # At each offset try to include and exclude the item
     max_without, items_without = knapsack_recurse_helper(
-            offset + 1, capacity, weights, values) 
+            offset + 1, capacity, weights, values, memo) 
 
     max_with = float('-inf')
     if capacity >= weights[offset]:
         # Backtrack if item cannot fit in current configration
         max_with, items_with = knapsack_recurse_helper(
-                offset + 1, capacity - weights[offset], weights, values) 
+                offset + 1, capacity - weights[offset], weights, values, memo) 
         max_with += values[offset]
-        items_with.append(offset)
+        # Need to make copy of array every time you change it for memo to work
+        items_with = items_with + [offset]
 
     if max_with > max_without:
-        return max_with, items_with
+        ans = max_with, items_with
     else:
-        return max_without, items_without
+        ans = max_without, items_without
+    memo[(offset, capacity)] = ans
+    return ans
 
 
 def min_weight_path_triangle(t):
