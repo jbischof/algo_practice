@@ -12,6 +12,14 @@ class TestDP(unittest.TestCase):
     def test_num_score_combs(self):
         self.assertEqual(dp.num_score_combs(6, [2, 3, 4]), 3)
 
+    def test_knapsack_recurse(self):
+        capacity = 5
+        weights = [2, 3, 1, 4]
+        values = [4, 5, 3, 7]
+        profit, items = dp.knapsack_recurse(capacity, weights, values)
+        self.assertEqual(profit, 10)
+        self.assertCountEqual(items, [2, 3])
+
     def test_longest_nd_subsequence(self):
         a = [0, 8, 4, 12, 2, 10, 6, 14, 1, 9]
         self.assertEqual(dp.longest_nd_subsequence(a), 4)

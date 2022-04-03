@@ -91,6 +91,85 @@ def num_score_combs(n, scores):
     return memo[n_score - 1][n]
 
 
+def knapsack_recurse(capacity, weights, values):
+    """
+    Determine the optimal combination of items to maximize value under a total
+    capacity constraint.
+
+    Issue: No longer clear how to make this a dynamic problem because we now
+    want to distinguish between sets of items that lead to the same
+    (offset, capacity) tuple. For example, at offset 1 can get capacity 1 from
+    a bag with [1, 2] or [3]. If both of these were tied for the best value
+    we'd return [3] with this implementation since we give ties to fewer items
+    in the bag.
+
+    Time: O(2^N), Space(N*2^N)
+
+    Args:
+        capacity: Int, total capacity of knapsack
+        weights: List of weights for each item
+        values: List of values for each item
+
+    Example:
+               0  1  2  3
+    weights = [2, 3, 1, 4]
+    values =  [4, 5, 3, 7]
+    capacity = 5
+    o, c, v,  items
+    4, 5, 0,  []
+    3, 1, 7,  [3]
+    3, 5, 0,  []
+    2, 0, 10, [2, 3] 
+    2, 4, 3,  [2] 
+    2, 1, 7,  [3] 
+    2, 5, 0,  []
+    1, 0, 10, [2, 3] 
+    1, 4, 3,  [2] 
+    1, 1, 8,  [1, 2] 
+    1, 1, 7,  [3] 
+    1, 2, 5,  [1]
+    1, 5, 0,  []
+    0, 0, 10, [2, 3] 
+    0, 4, 3,  [2] 
+    0, 2, 7,  [0, 2] 
+    0, 1, 8,  [1, 2] 
+    0, 1, 7,  [3] 
+    0, 2, 5,  [1]
+    0, 0, 9,  [0, 1]
+    0, 5, 0,  []
+    return 10, [2,3]
+    """
+
+    return knapsack_recurse_helper(0, capacity, weights, values)
+
+
+def knapsack_recurse_helper(offset, capacity, weights, values):
+    """
+    Recursive function that passes information UP the stack
+    """
+
+    # Base case: all items considered
+    if offset >= len(weights):
+        return 0, []
+
+    # At each offset try to include and exclude the item
+    max_without, items_without = knapsack_recurse_helper(
+            offset + 1, capacity, weights, values) 
+
+    max_with = float('-inf')
+    if capacity >= weights[offset]:
+        # Backtrack if item cannot fit in current configration
+        max_with, items_with = knapsack_recurse_helper(
+                offset + 1, capacity - weights[offset], weights, values) 
+        max_with += values[offset]
+        items_with.append(offset)
+
+    if max_with > max_without:
+        return max_with, items_with
+    else:
+        return max_without, items_without
+
+
 def min_weight_path_triangle(t):
     """
     Find minimum weight path from top to bottom in a triangle.
