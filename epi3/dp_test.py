@@ -57,3 +57,9 @@ class TestDP(unittest.TestCase):
         ]
         self.assertTrue(dp.has_array_sequence(a, [1, 3, 4, 6]))
         self.assertFalse(dp.has_array_sequence(a, [1, 2, 3, 4]))
+
+    def test_equal_subset_sum(self):
+        self.assertTrue(dp.equal_subset_sum([1, 2, 3, 4]))
+        self.assertTrue(dp.equal_subset_sum([1, 1, 3, 4, 7]))
+        self.assertFalse(dp.equal_subset_sum([1, 3, 4, 7]))
+        self.assertFalse(dp.equal_subset_sum([20, 1, 1, 3, 4, 7]))

@@ -365,3 +365,69 @@ def has_array_sequence_helper(i, j, offset, a, s, memo):
         has_array_sequence_helper(i, j - 1, offset + 1, a, s, memo),
     ])
     return memo[(i, j, offset)] 
+
+
+def equal_subset_sum(a):
+    """
+    Determine if the array can be partitioned into two arrays with equal sum.
+
+    Args:
+        a: Array of ints
+    Returns:
+        Bool: whether array can be partitioned
+        List(Set): two partitions
+
+    Brute force: Compute sum of overall array. If not a product of 2, return
+    False. Otherwise try all possible subsets and see if subset sum is equal to
+    half the total.
+    Time: O(N 2^N), Space: O(N)
+
+    Recursion: Let R(offset, sum) give whether can reach target sum with `sum`
+    amount remaining.
+    Then R(offset, sum) = R(offset + 1, sum - a[offset]) or R(offset + 1, sum)
+
+    Time: O(N * T), Space: O(N * T), where N is length of array and T is sum.
+
+    Example: 
+    a = [1, 1, 3, 4, 7]
+    asum = 16, target = 8
+    Return True {4, 3, 1}, {7, 1}
+    Example:
+    a = [20, 1, 1, 3, 4, 7]
+    asum = 36, target = 18 
+    Return False
+    """
+
+    memo = {}
+    asum = sum(a)
+    if asum % 2 != 0:
+        return False
+    return equal_subset_sum_helper(0, asum // 2, a, memo)
+
+
+def equal_subset_sum_helper(offset, remaining, a, memo):
+    # Base case: offset at end
+    if offset >= len(a):
+        if remaining == 0:
+            return True
+        return False
+
+    if (offset, remaining) in memo:
+        return memo[(offset, remaining)]
+
+    # Without offset
+    can_without = equal_subset_sum_helper(offset + 1, remaining, a, memo)
+
+    # With offset
+    can_with = False
+    remaining_with = remaining - a[offset]
+    if remaining_with >= 0:
+        # Backtrack if already lower than target
+        can_with = equal_subset_sum_helper(offset + 1, remaining_with, a, memo)
+
+    if can_with or can_without:
+        memo[(offset, remaining)] = True
+    else:
+        memo[(offset, remaining)] = False 
+
+    return memo[(offset, remaining)] 
