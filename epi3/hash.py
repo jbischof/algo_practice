@@ -208,14 +208,11 @@ def longest_consecutive_subarray(a):
     a = [3, -2, 7, 9, 8, 1, 2, 0, -1, 5, 8]
     ans: 6 from [-2, -1, 0, 1, 2, 3]
 
-    nums = [3, -2, 7, 9, 8, 1, 2, 0, -1, 5, 8]
+    nums = [3, -2, 7, 9, 8, 1, 2, 0, -1, 5]
     val, cc, mc, nums (after)
     3,   6,  6,  [5]
-    -2,  1,  6
     7,   3,  6
-    9,   1,  6
-    8,   1,  6
-    etc etc
+    5,   1,  6
     """
 
     nums = set(a)
