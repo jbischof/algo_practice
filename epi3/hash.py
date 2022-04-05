@@ -182,3 +182,64 @@ def longest_unique_subarray(a):
             items.add(a[end])
             max_len = max(len(items), max_len)
     return max_len
+
+
+def longest_consecutive_subarray(a):
+    """
+    Find the longest subarray where all integers are consecutive. The subarray
+    does not need to be contiguous in the original array.
+
+    Brute force: Sort the array. Then traverse with a counter and reset the 
+    counter every time you find a missing integer.
+    Time: O(NlogN), Space: O(1)
+
+    Idea: Iterate the array with a hashmap storing the start and end values of
+    clusters of consecutive ints. Then as go through the array need to check
+    if value belongs to any of the existing clusters. If not, form a new one.
+    Issue: how do you key an entry by both the start and the end? Also hard to 
+    know how to merge these clusters.
+
+    Idea2: Use a set and seed it with all the items in the array. Then while
+    traversing the set can search for neighboring values and pop them to form a 
+    cluster.
+    Time: O(N), Space: O(N)
+
+    Example:
+    a = [3, -2, 7, 9, 8, 1, 2, 0, -1, 5, 8]
+    ans: 6 from [-2, -1, 0, 1, 2, 3]
+
+    nums = [3, -2, 7, 9, 8, 1, 2, 0, -1, 5, 8]
+    val, cc, mc, nums (after)
+    3,   6,  6,  [5]
+    -2,  1,  6
+    7,   3,  6
+    9,   1,  6
+    8,   1,  6
+    etc etc
+    """
+
+    nums = set(a)
+    max_clust = 0
+
+    while nums:
+        val = nums.pop()
+        curr_clust = 1
+        # Search below
+        j = val - 1
+        while j in nums:
+            curr_clust += 1
+            nums.discard(j)
+            j -= 1
+        # Search above
+        k = val + 1
+        while k in nums:
+            curr_clust += 1
+            nums.discard(k)
+            k += 1
+        if curr_clust > max_clust:
+            max_clust = curr_clust
+        nums.discard(val)
+
+    return max_clust
+
+

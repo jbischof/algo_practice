@@ -22,3 +22,7 @@ class TestHash(unittest.TestCase):
     def test_longest_unique_subarray(self):
         a = ['f', 's', 'f', 'e', 't', 'w', 'e', 'n', 'w', 'e']
         self.assertEqual(hashlib.longest_unique_subarray(a), 5)
+
+    def test_longest_consecutive_subarray(self):
+        a = [3, -2, 7, 9, 8, 1, 2, 0, -1, 5, 8]
+        self.assertEqual(hashlib.longest_consecutive_subarray(a), 6)
