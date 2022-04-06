@@ -34,3 +34,15 @@ class TestSort(unittest.TestCase):
         a = [(0, 3), (2, 3), (4, 10), (5, 8), (6, 9), (10, 11), (11, 12)]
         self.assertEqual(sort.max_interval_overlap(a), 3)
 
+    def test_team_photo_day(self):
+        a = [
+            [('a', 8), ('b', 5), ('c', 6), ('d', 6), ('e', 8)],
+            [('a', 3), ('b', 7), ('c', 4), ('d', 7), ('e', 5)],
+        ]
+        self.assertTrue(sort.team_photo_day(a)[0])
+        a = [
+            [('a', 1), ('b', 5), ('c', 6), ('d', 6), ('e', 8)],
+            [('a', 3), ('b', 7), ('c', 4), ('d', 7), ('e', 5)],
+        ]
+        self.assertFalse(sort.team_photo_day(a)[0])
+

@@ -130,3 +130,56 @@ def max_interval_overlap(a):
         heapq.heappush(heap, interval[1])
         max_overlap = max(max_overlap, len(heap))
     return max_overlap
+
+
+def team_photo_day(a):
+    """
+    Two teams both have N players and want to line up for a photo shoot.
+    Given a 2xN array of person heights, find an ordering for the two arrays
+    such that every person in the first array is shorter than their counterpart
+    in the second array, or False if it is not possible.
+
+    Args:
+        a: A 2D array, where each entry is a (Name, height) tuple
+    Returns:
+        Bool. Whether possible to take the picture
+        List. A valid configuration for a
+
+    a = [
+        [('a', 8), ('b', 5), ('c', 6), ('d', 6), ('e', 8)],
+        [('a', 3), ('b', 7), ('c', 4), ('d', 7), ('e', 5)],
+    [
+    Ans:
+    [
+        [('a', 8), ('b', 5), ('c', 6), ('d', 6), ('e', 8)],
+        [('b', 7), ('a', 3), ('c', 4), ('e', 5), ('d', 7)],
+    [
+
+    Brute force: try all permutations of first array and check condition for
+    each. Time: O((N+1)!), Space: O(N)
+
+    Idea: If sorted both arrays should get close to the correct order.
+    Intuitvely need the tallest person in the back to "cover" for the tallest
+    in the front.
+    [
+        [('b', 5), ('c', 6), ('d', 6), ('a', 8), ('e', 8)],
+        [('a', 3), ('c', 4), ('e', 5), ('b', 7), ('d', 7)]
+    ]
+    Seems to work for my baby example, but what about this counterexample:
+    [
+        [('b', 4), ('c', 5), ('d', 5), ('a', 8), ('e', 8)],
+        [('a', 3), ('c', 4), ('e', 5), ('b', 5), ('d', 7)]
+    ]
+    Actually no counterexample possible. I wanted the 8 to have to 'cover' for a
+    tie in the 5s but then the stray 5 would have to cover for something at
+    least as big in the 8s place. So sorting seems to work.
+    """
+
+    a[0].sort(key=lambda x: x[1])
+    a[1].sort(key=lambda x: x[1])
+
+    if not all(a[0][i][1] > a[1][i][1] for i in range(len(a[0]))):
+        return False, None
+    return True, a
+    
+
