@@ -63,3 +63,16 @@ class TestDP(unittest.TestCase):
         self.assertTrue(dp.equal_subset_sum([1, 1, 3, 4, 7]))
         self.assertFalse(dp.equal_subset_sum([1, 3, 4, 7]))
         self.assertFalse(dp.equal_subset_sum([20, 1, 1, 3, 4, 7]))
+
+    def test_tokenize(self):
+        s = 'anagram'
+        d = set(['an', 'a', 'na', 'gram', 'anagram'])
+        print('ans', dp.tokenize(s, d))
+        self.assertCountEqual(
+                dp.tokenize(s, d), 
+                [
+                    'an a gram',
+                    'anagram',
+                    'a na gram',
+                ]
+        )

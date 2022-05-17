@@ -431,3 +431,45 @@ def equal_subset_sum_helper(offset, remaining, a, memo):
         memo[(offset, remaining)] = False 
 
     return memo[(offset, remaining)] 
+
+
+def tokenize(s, words):
+    """
+    Tokenize a string with no space delimiters into possible tokens in set.
+
+    Time: O(N^N), Space: O(N)
+
+    Note: DP solution very hard if want all possible decompositions. This
+    version is from an Amazon interview but the EPI version only asks if any
+    decomposition possible.
+
+         0123456
+    s = 'anagram'
+    words = set(['an', 'a', 'na', 'gram', 'anagram'])
+    o, i, interp
+    0, 1, ['a']
+    1, 2, ['a']
+    1, 3, ['a', 'na']
+    3, 4, ['a', 'na']
+    3, 5, ['a', 'na']
+    3, 6, ['a', 'na']
+    3, 7, ['a', 'na', 'gram']
+    0, 2, ['an']
+    2, 3, ['an', 'a']
+    ...
+    """
+    ret = []
+    tokenize_helper(0, s, [], words, ret)
+    return ret
+
+
+def tokenize_helper(offset, s, interp, words, ret):
+    for i in range(offset + 1, len(s) + 1):
+        if s[offset : i] in words:
+            interp.append(s[offset : i])
+            if i == len(s):
+                ret.append(" ".join(interp))
+            else:
+                tokenize_helper(i, s, interp, words, ret)
+            interp.pop()
+
