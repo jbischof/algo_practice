@@ -437,6 +437,10 @@ def tokenize(s, words):
     """
     Tokenize a string with no space delimiters into possible tokens in set.
 
+    Args:
+        s: An alphanumeric string
+        words: A set of words
+
     Time: O(N^N), Space: O(N)
 
     Note: DP solution very hard if want all possible decompositions. This
@@ -472,4 +476,45 @@ def tokenize_helper(offset, s, interp, words, ret):
             else:
                 tokenize_helper(i, s, interp, words, ret)
             interp.pop()
+
+
+def can_tokenize(s, words):
+    """
+    Determine if string without deliminters can be tokenized with words
+    in set.
+
+    Args:
+        s: An alphanumeric string
+        words: A set of words
+    Returns:
+        Bool. Whether string can be tokenized.
+
+    Time: O(N^2). In worst case no substr in set and have to scan all the way
+          back each iteration.
+    Space: O(N) for memo.
+
+
+         0123456
+    s = 'anagram'
+    words = set(['an', 'a', 'na', 'gram', 'anagram'])
+    i, j, memo
+           0  1  2  3  4  5  6  7
+    -, -, [T, F, F, F, F, F, F, F]
+    0, 0, [T, T, F, F, F, F, F, F]
+    1, 1, [T, T, F, F, F, F, F, F]
+    1, 0, [T, T, T, F, F, F, F, F]
+    2, 2, [T, T, T, T, F, F, F, F]
+    ...
+    """
+
+    # ith entry of memo is whether string[: i] can be tokenized
+    memo = [True] + [False] * len(s)
+
+    for i in range(len(s)):
+        for j in range(i, -1, -1):
+            if memo[j] and s[j : (i + 1)] in words:
+                memo[i + 1] = True
+                break
+
+    return memo[-1]
 

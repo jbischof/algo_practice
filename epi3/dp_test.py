@@ -67,7 +67,6 @@ class TestDP(unittest.TestCase):
     def test_tokenize(self):
         s = 'anagram'
         d = set(['an', 'a', 'na', 'gram', 'anagram'])
-        print('ans', dp.tokenize(s, d))
         self.assertCountEqual(
                 dp.tokenize(s, d), 
                 [
@@ -76,3 +75,10 @@ class TestDP(unittest.TestCase):
                     'a na gram',
                 ]
         )
+
+    def test_can_tokenize(self):
+        s = 'anagram'
+        d = set(['an', 'a', 'na', 'gram', 'anagram'])
+        self.assertTrue(dp.can_tokenize(s, d)) 
+        s = 'anugram'
+        self.assertFalse(dp.can_tokenize(s, d)) 
